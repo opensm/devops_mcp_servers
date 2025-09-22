@@ -1,23 +1,31 @@
 from rest_framework import serializers
 from dify_workflow.models import *
 
-class WorkflowSerializer(serializers.ModelSerializer):
+
+class AgentLogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AgentLog
+        fields = '__all__'
+
+
+class NodeExecutionSerializer(serializers.ModelSerializer):
+    agent_logs = AgentLogSerializer(many=True, read_only=True)
 
     class Meta:
-        model = Workflow
+        model = NodeExecution
         fields = '__all__'
-        read_only_fields = ['id']
 
 
-class WorkflowDataSerializer(serializers.ModelSerializer):
+class WorkflowRunSerializer(serializers.ModelSerializer):
+    nodes = NodeExecutionSerializer(many=True, read_only=True)
+
     class Meta:
-        model = WorkflowData
+        model = WorkflowRun
         fields = '__all__'
-        read_only_fields = ['id']
 
 
-class LLMAgentLogsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = LLMAgentLogs
-        fields = '__all__'
-        read_only_fields = ['id']
+__all__ = [
+    'AgentLogSerializer',
+    'NodeExecutionSerializer',
+    'WorkflowRunSerializer'
+]
