@@ -1,8 +1,6 @@
 import uuid
 from django.db import models
-from django.contrib.postgres.fields import ArrayField
 from django.core.serializers.json import DjangoJSONEncoder
-import json
 
 
 class WorkflowRun(models.Model):
@@ -19,7 +17,7 @@ class WorkflowRun(models.Model):
         indexes = [
             models.Index(fields=['conversation_id']),
             models.Index(fields=['task_id']),
-            models.Index(fields=['workflow_id']),
+            models.Index(fields=['workflow_run_id']),
             models.Index(fields=['created_at']),
         ]
 
@@ -62,7 +60,7 @@ class NodeExecution(models.Model):
 class AgentLog(models.Model):
     """存储代理执行日志"""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    node_execution = models.ForeignKey(NodeExecution, on_delete=models.CASCADE, related_name='agent_logs')
+    node = models.ForeignKey(NodeExecution, on_delete=models.CASCADE, related_name='agent_logs')
     node_execution_id = models.UUIDField()  # 原始日志中的ID
     label = models.CharField(max_length=200)
     parent_id = models.UUIDField(null=True, blank=True)
@@ -74,10 +72,10 @@ class AgentLog(models.Model):
 
     class Meta:
         indexes = [
-            models.Index(fields=['node_execution']),
+            models.Index(fields=['node_execution_id']),
             models.Index(fields=['parent_id']),
         ]
-        ordering = ['node_execution', 'created_at']
+        ordering = ['node_execution_id', 'created_at']
 
 
 __all__ = [

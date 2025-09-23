@@ -35,6 +35,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'dify_workflow',
+    'mcp_server',
+    'wechat_robot'
 ]
 
 MIDDLEWARE = [
@@ -52,8 +55,6 @@ ROOT_URLCONF = 'devops_mcp_servers.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates']
-        ,
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
