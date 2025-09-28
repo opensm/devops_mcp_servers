@@ -9,10 +9,10 @@ class WorkflowRun(models.Model):
     """存储工作流运行的基本信息"""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     event = models.CharField(max_length=100, verbose_name="事件", default="workflow_started")
-    workflow_run_id = models.UUIDField(verbose_name="工作流运行ID")
     conversation_id = models.UUIDField(verbose_name="运行ID")
     message_id = models.UUIDField(verbose_name="消息ID")
     task_id = models.UUIDField(verbose_name="任务ID")
+    workflow_run_id = models.UUIDField(verbose_name="工作流运行ID")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="创建时间")
 
     class Meta:
