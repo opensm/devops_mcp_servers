@@ -15,9 +15,9 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 import wechat_robot.urls
 import dify_workflow.urls
 urlpatterns = [
-    path('admin/', wechat_robot.urls.url_list),
+    path('admin/', include(wechat_robot.urls.url_list)),
 ]

@@ -18,7 +18,7 @@ class WechatRobotQuestionBase(models.Model):
 # {"userid":"ky005509"},"msgtype":"text","text":{"content":"@姚绍强 你好"}}
 
 class WechatRobotQuestion(WechatRobotQuestionBase):
-    text = models.JSONField(default=dict(), null=False, blank=False)
+    text = models.JSONField(default={}, null=False, blank=False)
     stream_id = models.CharField(max_length=36, null=True, default="")
 
 
@@ -27,7 +27,4 @@ class WechatRobotQuestion(WechatRobotQuestionBase):
 # 'msgtype': 'stream', 'stream': {'id': 'dify::aibrGalbJc-O4nrQRGAGLjNTIk8PpdhpCje:wrck4BDQAAWHKnqDvlif4Mp9tYXHMuuQ:V8hgz9vBFW'
 # }}
 class WechatRobotQuestionData(WechatRobotQuestionBase):
-    msg_type = models.CharField(
-        max_length=36, choices=(("文字", "text"), ("数据流", "stream")), default="stream", null=False
-    )
-    stream = models.JSONField(default=dict(), null=False, blank=False)
+    stream = models.JSONField(default={}, null=False, blank=False)
