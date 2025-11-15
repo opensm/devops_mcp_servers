@@ -9,7 +9,7 @@ class WechatRobotQuestionDataSerializer(serializers.ModelSerializer):
 
 
 class WechatRobotQuestionSerializer(serializers.ModelSerializer):
-    msg_id = serializers.CharField(max_length=36, unique=True, primary_key=True, source="msgid")
+    msg_id = serializers.CharField(max_length=36, primary_key=True, source="msgid")
     aibot_id = serializers.CharField(max_length=36, source="aibotid")
     chat_id = serializers.CharField(max_length=36, source="chatid")
     chat_type = serializers.CharField(max_length=36, source="chattype")
