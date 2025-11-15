@@ -5,6 +5,7 @@ from common.msg_crypt_helper import MsgCryptHelper
 from django.conf import settings
 from common.loger import logger
 
+
 class EncryptedDataParser(parsers.JSONParser):
     """
     自定义解析器，用于解密加密的请求数据
@@ -28,6 +29,11 @@ class EncryptedDataParser(parsers.JSONParser):
 
         # 检查数据是否加密
         if 'encrypt' in parsed_data:
+            logger.debug("输出参数：token:{},key:{},ID:{}".format(
+                settings.WECHAT_TOKEN,
+                settings.WECHAT_ENCODING_AES_KEY,
+                settings.WECHAT_CORP_ID_OR_APP_ID
+            ))
             # 初始化解密工具
             msg_crypt_helper = MsgCryptHelper(
                 sToken=settings.WECHAT_TOKEN,
