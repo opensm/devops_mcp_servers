@@ -21,7 +21,7 @@ class EncryptedDataParser(parsers.JSONParser):
         """
         # 先调用父类方法解析原始JSON数据
         # parsed_data = super().parse(stream, media_type, parser_context)
-        parsed_data = stream.body
+        parsed_data = stream.body.decode('utf-8')
 
         # 获取请求对象
         request = parser_context['request']
