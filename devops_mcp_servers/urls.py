@@ -19,5 +19,6 @@ from django.urls import path, include
 import wechat_robot.urls
 import dify_workflow.urls
 urlpatterns = [
-    path('admin/', include(wechat_robot.urls.url_list)),
+    # path('admin/', include(wechat_robot.urls.url_list)),
+    path('ai-bot/', include(wechat_robot.urls.url_list)),
 ]
