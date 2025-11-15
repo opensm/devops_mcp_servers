@@ -18,6 +18,7 @@ class EncryptedResponseRenderer(renderers.JSONRenderer):
         request = renderer_context['request']
         response = renderer_context['response']
         logger.debug(f"返回数据: {data}")
+        logger.debug(f"返回数据: {data}, media type {accepted_media_type} context {renderer_context}")
         # 从查询参数获取加密所需参数
         nonce = request.query_params.get('nonce')
         timestamp = request.query_params.get('timestamp')
@@ -55,6 +56,5 @@ class EncryptedResponseRenderer(renderers.JSONRenderer):
                 # 加密失败，记录错误但继续返回明文
                 logger.error(f"响应加密失败: {str(e)}")
 
-        logger.debug(f"返回数据: {data}, media type {accepted_media_type} context {renderer_context}")
         # 如果不需要加密或加密失败，返回原始JSON数据
         return super().render(data, accepted_media_type, renderer_context)
