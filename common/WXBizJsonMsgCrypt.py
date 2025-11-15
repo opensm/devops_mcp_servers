@@ -268,12 +268,12 @@ class WXBizJsonMsgCrypt(object):
         #  json_content: 解密后的原文，当return返回0时有效
         # @return: 成功0，失败返回对应的错误码
         # 验证安全签名
-        # jsonParse = JsonParse()
-        # ret, encrypt = jsonParse.extract(sPostData)
-        # if ret != 0:
-        #     return ret, None
+        jsonParse = JsonParse()
+        ret, encrypt = jsonParse.extract(sPostData)
+        if ret != 0:
+            return ret, None
         sha1 = SHA1()
-        ret, signature = sha1.getSHA1(self.m_sToken, sTimeStamp, sNonce, sPostData)
+        ret, signature = sha1.getSHA1(self.m_sToken, sTimeStamp, sNonce, encrypt)
         if ret != 0:
             return ret, None
         if not signature == sMsgSignature:
@@ -281,5 +281,5 @@ class WXBizJsonMsgCrypt(object):
             logger.debug(signature)
             return ierror.WXBizMsgCrypt_ValidateSignature_Error, None
         pc = Prpcrypt(self.key)
-        ret, json_content = pc.decrypt(sPostData, self.m_sReceiveId)
+        ret, json_content = pc.decrypt(encrypt, self.m_sReceiveId)
         return ret, json_content
