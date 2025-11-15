@@ -12,6 +12,14 @@ class EncryptedDataParser(parsers.JSONParser):
     """
 
     def parse(self, stream, media_type=None, parser_context=None):
+        """
+        解析加密的请求数据
+        :param stream: 请求数据流
+        :param media_type: 请求媒体类型
+        :param parser_context: 解析上下文
+        :return: 解析后的数据
+        """
+        logger.debug("开始解析数据: {}".format(stream))
         # 先调用父类方法解析原始JSON数据
         parsed_data = super().parse(stream, media_type, parser_context)
 
