@@ -123,3 +123,4 @@ LOGLEVEL = os.environ.get('LOGLEVEL', 'INFO').upper()
 # 加密字符串
 WECHAT_TOKEN = os.environ.get('WECHAT_TOKEN', None)
 WECHAT_ENCODING_AES_KEY = os.environ.get('WECHAT_ENCODING_AES_KEY', None)
+WECHAT_CORP_ID_OR_APP_ID = os.environ.get('WECHAT_CORP_ID_OR_APP_ID', None)
