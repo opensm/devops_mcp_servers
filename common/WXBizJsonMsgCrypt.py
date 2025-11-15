@@ -173,9 +173,12 @@ class Prpcrypt(object):
         @return: 删除填充补位后的明文
         """
         try:
+            logger.debug(
+                f"解密函数，解密参数为: key {self.key}, mode {self.mode} key16 {self.key[:16]},解密内容： {text}")
             cryptor = AES.new(self.key, self.mode, self.key[:16])
             # 使用BASE64对密文进行解码，然后AES-CBC解密
             plain_text = cryptor.decrypt(base64.b64decode(text))
+            logger.debug(f"解密结果: {plain_text}")
         except Exception as e:
             logger.error(e)
             return ierror.WXBizMsgCrypt_DecryptAES_Error, None
