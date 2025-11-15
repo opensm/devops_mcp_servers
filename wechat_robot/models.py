@@ -9,7 +9,7 @@ class WechatRobotQuestionBase(models.Model):
     chattype = models.CharField(max_length=36, choices=(("group", "群"),("single", "个人")), default="group", null=False)
     chat_from = models.JSONField(default=dict(), null=False, blank=False,db_column="from")
     msgtype = models.CharField(
-        max_length=36, choices=(("文字", "text"), ("数据流", "stream")), default="text", null=False
+        max_length=36, choices=(("text", "文字"), ("stream", "数据流")), default="text", null=False
     )
 
 
