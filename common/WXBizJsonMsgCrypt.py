@@ -243,6 +243,7 @@ class WXBizJsonMsgCrypt(object):
         # @param sNonce: 随机串，可以自己生成，也可以用URL参数的nonce
         # sEncryptMsg: 加密后的可以直接回复用户的密文，包括msg_signature, timestamp, nonce, encrypt的json格式的字符串,
         # return：成功0，sEncryptMsg,失败返回对应的错误码None
+        logger.debug("加密参数为: sReplyMsg: %s sNonce:%s", sReplyMsg, sNonce)
         pc = Prpcrypt(self.key)
         ret, encrypt = pc.encrypt(sReplyMsg, self.m_sReceiveId)
         encrypt = encrypt.decode('utf-8')
