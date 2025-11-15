@@ -58,6 +58,7 @@ class MsgCryptHelper:
         logger.debug("发送流消息: %s", stream)
 
         ret, resp = self.wxcpt_json.EncryptMsg(stream, nonce, timestamp)
+        logger.debug("加密结果: %d %s", ret, resp)
         if ret != 0:
             logger.error("加密失败，错误码: %d", ret)
             return None
