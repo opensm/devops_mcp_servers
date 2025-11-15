@@ -28,6 +28,7 @@ class MsgCryptHelper:
         :param nonce: 随机数
         :return: 解密后的明文消息
         """
+        logger.debug("开始解密消息，encrypted_data=%s, msg_signature=%s, timestamp=%s, nonce=%s", )
         ret, decrypted_msg = self.wxcpt.DecryptMsg(
             encrypted_data,
             msg_signature,
