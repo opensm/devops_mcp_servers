@@ -3,6 +3,7 @@ import json
 from rest_framework import renderers
 from common.msg_crypt_helper import MsgCryptHelper
 from django.conf import settings
+from common.loger import logger
 
 
 class EncryptedResponseRenderer(renderers.JSONRenderer):
@@ -16,10 +17,11 @@ class EncryptedResponseRenderer(renderers.JSONRenderer):
         # 获取请求和响应对象
         request = renderer_context['request']
         response = renderer_context['response']
-
+        logger.debug(f"请求数据: {data}")
         # 从查询参数获取加密所需参数
         nonce = request.query_params.get('nonce')
         timestamp = request.query_params.get('timestamp')
+        logger.debug(f"请求参数: {nonce}, {timestamp}")
 
         # 获取receiveid，可以从URL参数、请求头或设置中获取
         # 这里假设receiveid在URL参数中，如果没有则使用默认值
@@ -27,6 +29,7 @@ class EncryptedResponseRenderer(renderers.JSONRenderer):
 
         # 检查是否需要加密响应
         should_encrypt = all([nonce, timestamp]) and request.method in ['POST', 'PUT', 'PATCH']
+        logger.debug(f"是否需要加密响应: {should_encrypt}")
 
         if should_encrypt:
             # 初始化加密工具
@@ -48,8 +51,6 @@ class EncryptedResponseRenderer(renderers.JSONRenderer):
                     return encrypted_data
             except Exception as e:
                 # 加密失败，记录错误但继续返回明文
-                import logging
-                logger = logging.getLogger(__name__)
                 logger.error(f"响应加密失败: {str(e)}")
 
         # 如果不需要加密或加密失败，返回原始JSON数据
