@@ -192,6 +192,7 @@ class Prpcrypt(object):
             json_len = socket.ntohl(struct.unpack("I", content[: 4])[0])
             json_content = content[4: json_len + 4].decode('utf-8')
             from_receiveid = content[json_len + 4:].decode('utf-8')
+            logger.debug(f"解密id结果: {from_receiveid}")
         except Exception as e:
             logger.error(e)
             return ierror.WXBizMsgCrypt_IllegalBuffer, None
