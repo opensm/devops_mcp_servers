@@ -51,7 +51,7 @@ class EncryptedResponseRenderer(renderers.JSONRenderer):
                 if encrypted_data:
                     # 返回加密后的数据
                     response['Content-Type'] = 'application/json'
-                    return encrypted_data
+                    return super().render(encrypted_data, accepted_media_type, renderer_context)
             except Exception as e:
                 # 加密失败，记录错误但继续返回明文
                 logger.error(f"响应加密失败: {str(e)}")
