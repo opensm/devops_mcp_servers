@@ -208,6 +208,7 @@ class WXBizJsonMsgCrypt(object):
     # 构造函数
     def __init__(self, sToken, sEncodingAESKey, sReceiveId):
         try:
+            logger.debug("[debug]: sEncodingAESKey: %s", sEncodingAESKey)
             self.key = base64.b64decode(sEncodingAESKey + "=")
             assert len(self.key) == 32
         except:
