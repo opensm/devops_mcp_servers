@@ -49,10 +49,10 @@ class EncryptedDataParser(parsers.JSONParser):
                 sEncodingAESKey=settings.WECHAT_ENCODING_AES_KEY,
                 sReceiveId=settings.WECHAT_CORP_ID_OR_APP_ID
             )
-            logger.debug(f"开始解密数据: {parsed_data['encrypt']}")
+            logger.debug(f"开始解密数据: {parsed_data}")
             # 解密数据
             try:
-                encrypted_data = parsed_data['encrypt']
+                encrypted_data = parsed_data
                 decrypted_msg = msg_crypt_helper.decrypt_msg(
                     encrypted_data,
                     msg_signature,
