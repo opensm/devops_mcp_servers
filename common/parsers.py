@@ -20,7 +20,7 @@ class EncryptedDataParser(parsers.JSONParser):
         :return: 解析后的数据
         """
         logger.debug("开始解析数据: {}".format(stream))
-        logger.debug("请求数据: %s", stream.body)
+        # logger.debug("请求数据: %s", stream.body)
         # 先调用父类方法解析原始JSON数据
         parsed_data = super().parse(stream, media_type, parser_context)
 

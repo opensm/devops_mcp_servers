@@ -268,12 +268,12 @@ class WXBizJsonMsgCrypt(object):
         #  json_content: 解密后的原文，当return返回0时有效
         # @return: 成功0，失败返回对应的错误码
         # 验证安全签名
-        jsonParse = JsonParse()
-        ret, encrypt = jsonParse.extract(sPostData)
-        if ret != 0:
-            return ret, None
+        # jsonParse = JsonParse()
+        # ret, encrypt = jsonParse.extract(sPostData)
+        # if ret != 0:
+        #     return ret, None
         sha1 = SHA1()
-        ret, signature = sha1.getSHA1(self.m_sToken, sTimeStamp, sNonce, encrypt)
+        ret, signature = sha1.getSHA1(self.m_sToken, sTimeStamp, sNonce, sPostData)
         if ret != 0:
             return ret, None
         if not signature == sMsgSignature:
