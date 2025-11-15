@@ -38,12 +38,14 @@ class EncryptedResponseRenderer(renderers.JSONRenderer):
                 sEncodingAESKey=settings.WECHAT_ENCODING_AES_KEY,
                 sReceiveId=settings.WECHAT_CORP_ID_OR_APP_ID
             )
+            logger.debug(f"初始化加密工具: {msg_crypt_helper}")
 
             # 加密响应数据
             try:
                 encrypted_data = msg_crypt_helper.encrypt_message(
                     receiveid, nonce, timestamp, data
                 )
+                logger.debug(f"加密后的数据: {encrypted_data}")
 
                 if encrypted_data:
                     # 返回加密后的数据
