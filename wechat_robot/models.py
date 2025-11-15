@@ -3,12 +3,12 @@ from django.db import models
 
 
 class WechatRobotQuestionBase(models.Model):
-    msg_id = models.CharField(max_length=36, unique=True, primary_key=True)
-    aibot_id = models.CharField(max_length=36, name="机器人id", default="", null=False)
-    chat_id = models.CharField(max_length=36, name="聊天id", default="", null=False)
-    chat_type = models.CharField(max_length=36, choices=(("群", "group"),), default="group", null=False)
-    chat_from = models.JSONField(default=dict(), null=False, blank=False)
-    msg_type = models.CharField(
+    msgid = models.CharField(max_length=36, unique=True, primary_key=True)
+    aibotid = models.CharField(max_length=36, name="机器人id", default="", null=False)
+    chatid = models.CharField(max_length=36, name="聊天id", default="", null=False)
+    chattype = models.CharField(max_length=36, choices=(("群", "group"),), default="group", null=False)
+    chat_from = models.JSONField(default=dict(), null=False, blank=False,db_column="from")
+    msgtype = models.CharField(
         max_length=36, choices=(("文字", "text"), ("数据流", "stream")), default="text", null=False
     )
 
