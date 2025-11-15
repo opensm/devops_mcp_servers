@@ -19,8 +19,6 @@ class EncryptedDataParser(parsers.JSONParser):
         :param parser_context: 解析上下文
         :return: 解析后的数据
         """
-        logger.debug("开始解析数据: {}".format(stream))
-        # logger.debug("请求数据: %s", stream.body)
         # 先调用父类方法解析原始JSON数据
         parsed_data = super().parse(stream, media_type, parser_context)
 
@@ -50,7 +48,7 @@ class EncryptedDataParser(parsers.JSONParser):
                 sEncodingAESKey=settings.WECHAT_ENCODING_AES_KEY,
                 sReceiveId=settings.WECHAT_CORP_ID_OR_APP_ID
             )
-
+            logger.debug(f"开始解密数据: {parsed_data['encrypt']}")
             # 解密数据
             try:
                 encrypted_data = parsed_data['encrypt']

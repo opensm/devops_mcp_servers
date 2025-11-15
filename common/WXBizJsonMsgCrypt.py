@@ -281,5 +281,5 @@ class WXBizJsonMsgCrypt(object):
             logger.debug(signature)
             return ierror.WXBizMsgCrypt_ValidateSignature_Error, None
         pc = Prpcrypt(self.key)
-        ret, json_content = pc.decrypt(encrypt, self.m_sReceiveId)
+        ret, json_content = pc.decrypt(sPostData, self.m_sReceiveId)
         return ret, json_content
