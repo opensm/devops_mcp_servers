@@ -26,6 +26,7 @@ class WechatRobotQuestionView(ListCreateAPIView):
             if request.data.get('msgtype', "") == "stream":
                 stream_id = request.data.get('stream', {}).get('id', False)
                 WechatRobotQuestion.objects.get(stream_id=stream_id)
+                return super().create(request, *args, **kwargs)
             else:
                 return super().create(request, *args, **kwargs)
         except WechatRobotQuestion.DoesNotExist:
