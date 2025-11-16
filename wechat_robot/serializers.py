@@ -49,7 +49,7 @@ class WechatRobotQuestionSerializer(serializers.ModelSerializer):
         logger.debug(f"保存数据: {validated_data}")
         if validated_data.get('msgtype', "") == "stream":
             try:
-                stream_id = validated_data.get('stream', {}).get('id', False)
+                stream_id = validated_data.get('stream', "")
                 robt_instance = WechatRobotQuestion.objects.get(stream=stream_id)
                 return robt_instance
             except WechatRobotQuestion.DoesNotExist:
