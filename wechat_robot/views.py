@@ -22,4 +22,11 @@ class WechatRobotQuestionView(ListCreateAPIView):
 
     def create(self, request, *args, **kwargs):
         logger.debug(f"创建请求数据: {request.data}")
-        return super().create(request, *args, **kwargs)
+        try:
+            stream_id = request.data.get('stream').get('id')
+            WechatRobotQuestion.objects.get(stream_id=stream_id)
+        except WechatRobotQuestion.DoesNotExist:
+            return super().create(request, *args, **kwargs)
+        except Exception as e:
+            logger.error(f"创建数据失败: {str(e)}")
+            return None
