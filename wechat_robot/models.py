@@ -12,6 +12,8 @@ class WechatRobotQuestionBase(models.Model):
     msgtype = models.CharField(
         max_length=36, choices=(("text", "文字"), ("stream", "数据流")), default="text", null=False
     )
+    create_time = models.DateTimeField(auto_now_add=True, verbose_name="创建时间")
+    update_time = models.DateTimeField(auto_now=True, verbose_name="更新时间")
 
 
 # { "msgid":"74ac2a01537faf17e83e248a1ac7fd4c","aibotid":"aibrGalbJc-O4nrQRGAGLjNTIk8PpdhpCje",

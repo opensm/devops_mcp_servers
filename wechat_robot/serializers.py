@@ -16,6 +16,26 @@ class WechatRobotQuestionSerializer(serializers.ModelSerializer):
     # # from = serializers.JSONField(source="from")
     # msgtype = serializers.ChoiceField(choices=(("text", "text"), ("stream", "stream")), source="msg_type")
     chat_from = serializers.JSONField(source="chat_from", field_name="from")
+    content = serializers.SerializerMethodField()
+    finish = serializers.SerializerMethodField()
+
+    def get_content(self, obj):
+        import datetime
+        _time = (obj.create_time - datetime.datetime.now()).total_seconds()
+        if not obj.WechatRobotQuestion and _time < 120:
+            return "当前机器人正在处理中，请稍等"
+        elif not obj.WechatRobotQuestion and _time >= 120:
+            return "当前机器人没有处理该问题，请稍后再试"
+        return obj.WechatRobotQuestion.content
+
+    def get_finish(self, obj):
+        import datetime
+        _time = (obj.create_time - datetime.datetime.now()).total_seconds()
+        if not obj.WechatRobotQuestion and _time < 120:
+            return False
+        elif not obj.WechatRobotQuestion and _time >= 120:
+            return True
+        return True
 
     class Meta:
         model = WechatRobotQuestion
