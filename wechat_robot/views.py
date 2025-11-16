@@ -20,23 +20,23 @@ class WechatRobotQuestionView(ListCreateAPIView):
     parser_classes = [EncryptedDataParser]
     renderer_classes = [EncryptedResponseRenderer]
 
-    def create(self, request, *args, **kwargs):
-        logger.debug(f"创建请求数据: {request.data}")
-        try:
-            if request.data.get('msgtype', "") == "stream":
-                stream_id = request.data.get('stream', {}).get('id', False)
-                WechatRobotQuestion.objects.get(stream_id=stream_id)
-                return super().create(request, *args, **kwargs)
-            else:
-                return super().create(request, *args, **kwargs)
-        except WechatRobotQuestion.DoesNotExist:
-            logger.warning(f"当前请求为流数据，但是未查询到数据: {request.data}")
-            return super().create(request, *args, **kwargs)
-        except Exception as e:
-            logger.error(f"创建数据失败: {str(e)}")
-            return super().create(request, *args, **kwargs)
-
-    def perform_create(self, serializer):
-        logger.debug(f"保存当前数据: {self.request.data}")
-        if self.request.data.get('msgtype', '') == 'text':
-            serializer.save()
+    # def create(self, request, *args, **kwargs):
+    #     logger.debug(f"创建请求数据: {request.data}")
+    #     try:
+    #         if request.data.get('msgtype', "") == "stream":
+    #             stream_id = request.data.get('stream', {}).get('id', False)
+    #             WechatRobotQuestion.objects.get(stream_id=stream_id)
+    #             return super().create(request, *args, **kwargs)
+    #         else:
+    #             return super().create(request, *args, **kwargs)
+    #     except WechatRobotQuestion.DoesNotExist:
+    #         logger.warning(f"当前请求为流数据，但是未查询到数据: {request.data}")
+    #         return super().create(request, *args, **kwargs)
+    #     except Exception as e:
+    #         logger.error(f"创建数据失败: {str(e)}")
+    #         return super().create(request, *args, **kwargs)
+    #
+    # def perform_create(self, serializer):
+    #     logger.debug(f"保存当前数据: {self.request.data}")
+    #     if self.request.data.get('msgtype', '') == 'text':
+    #         serializer.save()

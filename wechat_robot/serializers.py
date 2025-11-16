@@ -11,13 +11,6 @@ class WechatRobotQuestionDataSerializer(serializers.ModelSerializer):
 
 
 class WechatRobotQuestionSerializer(serializers.ModelSerializer):
-    # msgid = serializers.CharField(max_length=36, source="msg_id")
-    # aibotid = serializers.CharField(max_length=36, source="aibot_id")
-    # chatid = serializers.CharField(max_length=36, source="chat_id")
-    # chattype = serializers.CharField(max_length=36, source="chat_type")
-    # # from = serializers.JSONField(source="from")
-    # msgtype = serializers.ChoiceField(choices=(("text", "text"), ("stream", "stream")), source="msg_type")
-    # chat_from = serializers.JSONField(source="chat_from")
     content = serializers.SerializerMethodField()
     finish = serializers.SerializerMethodField()
 
@@ -38,6 +31,24 @@ class WechatRobotQuestionSerializer(serializers.ModelSerializer):
         elif not obj.workflow_runs and _time >= 120:
             return True
         return False
+
+    def validate(self, attrs):
+        logger.debug(f"验证数据: {attrs}")
+        return attrs
+
+    def create(self, validated_data):
+        logger.debug(f"保存数据: {validated_data}")
+        if validated_data.get('msgtype', "") == "stream":
+            try:
+                stream_id = validated_data.get('stream', {}).get('id', False)
+                robt_instance = WechatRobotQuestion.objects.get(stream_id=stream_id)
+                return robt_instance
+            except WechatRobotQuestion.DoesNotExist:
+                logger.error(f"当前请求为流数据，但是未查询到数据: {validated_data}")
+                raise serializers.ValidationError("当前请求为流数据，但是未查询到数据")
+        else:
+            logger.debug(f"保存数据: {validated_data}")
+            return super().create(validated_data)
 
     class Meta:
         model = WechatRobotQuestion
