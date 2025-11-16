@@ -22,6 +22,7 @@ class WechatRobotQuestionSerializer(serializers.ModelSerializer):
     finish = serializers.SerializerMethodField()
 
     def get_content(self, obj):
+        logger.debug(f"{obj.id} 数据为：{obj}")
         _time = (timezone.now() - obj.create_time).total_seconds()
         logger.debug(f"{obj.id} 数据时间差为：{_time},数据为：{obj.workflow_runs}")
         if not obj.workflow_runs and _time < 120:
