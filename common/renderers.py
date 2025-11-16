@@ -43,7 +43,7 @@ class FormattedResponseRenderer:
         _data = self.encode_object.encrypt_message(
             receiveid, nonce, timestamp, data
         )
-        return response_data
+        return _data
 
     def format_other_data(self, content, stream_id, finish, receiveid, nonce, timestamp, **kwargs):
         """
