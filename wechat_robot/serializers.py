@@ -29,8 +29,7 @@ class WechatRobotQuestionSerializer(serializers.ModelSerializer):
         return obj.WechatRobotQuestion.content
 
     def get_finish(self, obj):
-        import datetime
-        _time = (obj.create_time - datetime.datetime.now()).total_seconds()
+        _time = (timezone.now() - obj.create_time).total_seconds()
         if not obj.WechatRobotQuestion and _time < 120:
             return False
         elif not obj.WechatRobotQuestion and _time >= 120:
