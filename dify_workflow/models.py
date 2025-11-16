@@ -8,7 +8,7 @@ class WorkflowRun(models.Model):
     """存储工作流运行的基本信息"""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     robot_task = models.ForeignKey(
-        'WechatRobotQuestion',
+        WechatRobotQuestion,
         verbose_name="机器人ID", on_delete=models.CASCADE, related_name='workflow_runs', null=True
     )
     event = models.CharField(max_length=100, verbose_name="事件", default="workflow_started")
