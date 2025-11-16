@@ -30,9 +30,9 @@ class WechatRobotQuestionSerializer(serializers.ModelSerializer):
 
     def get_finish(self, obj):
         _time = (timezone.now() - obj.create_time).total_seconds()
-        if not obj.WechatRobotQuestion and _time < 120:
+        if not obj.workflow_runs and _time < 120:
             return False
-        elif not obj.WechatRobotQuestion and _time >= 120:
+        elif not obj.workflow_runs and _time >= 120:
             return True
         return True
 
