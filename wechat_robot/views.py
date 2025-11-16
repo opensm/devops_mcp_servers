@@ -4,6 +4,7 @@ from wechat_robot.models import WechatRobotQuestionData, WechatRobotQuestion
 from wechat_robot.serializers import WechatRobotQuestionDataSerializer, WechatRobotQuestionSerializer
 from common.parsers import EncryptedDataParser
 from common.renderers import EncryptedResponseRenderer
+from common.loger import logger
 
 
 class WechatRobotQuestionDataView(ListCreateAPIView):
@@ -18,3 +19,7 @@ class WechatRobotQuestionView(ListCreateAPIView):
     serializer_class = WechatRobotQuestionSerializer
     parser_classes = [EncryptedDataParser]
     renderer_classes = [EncryptedResponseRenderer]
+
+    def create(self, request, *args, **kwargs):
+        logger.debug(f"创建请求数据: {request.data}")
+        return super().create(request, *args, **kwargs)
