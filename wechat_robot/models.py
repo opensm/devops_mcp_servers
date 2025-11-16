@@ -3,7 +3,7 @@ from django.db import models
 
 
 class WechatRobotQuestionBase(models.Model):
-    msgid = models.CharField(max_length=36, unique=True, primary_key=True, verbose_name="消息id")
+    msgid = models.CharField(max_length=36, unique=True, verbose_name="消息id")
     aibotid = models.CharField(max_length=36, verbose_name="机器人id", default="", null=False)
     chatid = models.CharField(max_length=36, verbose_name="聊天id", default="", null=False)
     chattype = models.CharField(max_length=36, choices=(("group", "群"), ("single", "个人")), default="group",
