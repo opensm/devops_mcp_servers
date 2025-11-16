@@ -41,7 +41,10 @@ class FormattedResponseRenderer:
             }
         }
         _data = self.encode_object.encrypt_message(
-            receiveid, nonce, timestamp, data
+            receiveid=receiveid,
+            nonce=nonce,
+            timestamp=timestamp,
+            data=data
         )
         return _data
 
@@ -58,7 +61,10 @@ class FormattedResponseRenderer:
             }
         }
         _data = self.encode_object.encrypt_message(
-            receiveid, nonce, timestamp, data
+            receiveid=receiveid,
+            nonce=nonce,
+            timestamp=timestamp,
+            data=data
         )
         return _data
 
