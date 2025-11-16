@@ -26,7 +26,7 @@ class WechatRobotQuestionBase(models.Model):
 class WechatRobotQuestion(WechatRobotQuestionBase):
     import uuid
     text = models.JSONField(default="", null=False, blank=False)
-    stream_id = models.UUIDField(null=False, blank=False, default=uuid.uuid4, primary_key=True, editable=False)
+    stream_id = models.UUIDField(null=False, blank=False, default=uuid.uuid4, unique=True, editable=False)
 
 
 # {'msgid': '2cea1e14656ba7c3810a3c6841e18a68', 'aibotid': 'aibrGalbJc-O4nrQRGAGLjNTIk8PpdhpCje',
