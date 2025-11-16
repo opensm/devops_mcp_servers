@@ -120,6 +120,14 @@ class EncryptedResponseRenderer(renderers.JSONRenderer, FormattedResponseRendere
             )
             logger.debug(f"加密后的数据: {encrypted_data}")
 
+            time_ = self.encode_object.decrypt_msg(
+                encrypted_data="IOjxfCKyT1cn8zHF+2S0cN7oK+Cfq5UZTXr/0Tfdedddzs0BtvMM2WSh7KT4Ext7IuxrDVYg3OLs+TFAID7NPliXWZrsZv39ug5RLUDe84HS9emuOYR+rLFNMAJpFoItVAM1p5HkbncpOpsoKpriyPjChwy42Qc3bR8lnVebhWRNe7xiKxyNP1je12LzxqFK9YoVS3Hmv0gnnxnzVZIatCakLUBmts2rsfQIZL76HJDju1lQoBk6RuCWXEeSf8uogvx3PEKNQSYFtkw4dQSh5vOtDEFwOKf1np0TwK7em9/YbO7WA3vrb29rYSKGhu/JK7nNcH5p76aohNl9p1zil63dzhUSB/G++xodGW6jiTQOpTPDs36XOYVgUUn7t7xVfLAIGrmBQZ0PRyfTEJgqJehkibYMN8fNBVALK/RURQcjrp6k6Q7UHwF1PyLCSfg+5TOy61IYrN9ft9KwLGD9cj7DKVJtcBvUPC4hZhNoPxElaKR6oeHTBRGWtAv9wUafUfFdDrz0+eDL96U8YZqN0rSuvW0vzQFFN/8CXoqgCV0=",
+                msg_signature="6536e7a4e5b95a95567bff1030c3f32982765216",
+                timestamp="1763271890",
+                nonce="1762761344"
+            )
+            logger.debug(f"解密后的数据: {time_}")
+
             if not encrypted_data:
                 # 返回加密后的数据
                 raise Exception("加密失败，请联系管理员")
