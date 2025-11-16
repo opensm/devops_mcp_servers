@@ -18,17 +18,17 @@ class WechatRobotQuestionSerializer(serializers.ModelSerializer):
         logger.debug(f"类型数据为：{obj}")
         _time = (timezone.now() - obj.create_time).total_seconds()
         logger.debug(f"{obj.id} 数据时间差为：{_time},数据为：{obj.workflow_runs}")
-        if not obj.workflow_runs and _time < 120:
+        if obj.workflow_runs is None and _time < 120:
             return "当前机器人正在处理中，请稍等"
-        elif not obj.workflow_runs and _time >= 120:
+        elif obj.workflow_runs is None and _time >= 120:
             return "当前机器人没有处理该问题，请稍后再试"
         return "测试数据: {}".format(_time)
 
     def get_finish(self, obj):
         _time = (timezone.now() - obj.create_time).total_seconds()
-        if not obj.workflow_runs and _time < 120:
+        if obj.workflow_runs is None and _time < 120:
             return False
-        elif not obj.workflow_runs and _time >= 120:
+        elif obj.workflow_runs is None and _time >= 120:
             return True
         return False
 
