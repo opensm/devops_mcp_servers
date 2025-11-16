@@ -34,6 +34,12 @@ class WechatRobotQuestionSerializer(serializers.ModelSerializer):
 
     def to_internal_value(self, data):
         logger.debug(f"数据: {data}")
+        stream = data.pop("stream")
+        chat_from = data.pop("from")
+        data.update({
+            "stream": stream['id'],
+            "from": chat_from['userid']
+        })
         return super().to_internal_value(data)
 
     def create(self, validated_data):
