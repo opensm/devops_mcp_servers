@@ -69,11 +69,13 @@ class FormattedResponseRenderer:
         return _data
 
 
-class EncryptedResponseRenderer(renderers.JSONRenderer, FormattedResponseRenderer):
+class EncryptedResponseRenderer(renderers.BaseRenderer, FormattedResponseRenderer):
     """
     自定义渲染器，用于加密响应数据
     """
-
+    media_type = 'text/plain'  # 关键：DRF 靠它做内容协商
+    format = 'txt'  # 可选：?format=txt 也可触发
+    charset = 'utf-8'
     _error_message = "系统错误，请联系管理员"
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
@@ -107,10 +109,8 @@ class EncryptedResponseRenderer(renderers.JSONRenderer, FormattedResponseRendere
                 timestamp=timestamp
             )
             # 不需要加密，返回原始JSON数据
-            return super().render(
-                data=_data,
-                accepted_media_type=accepted_media_type,
-                renderer_context=renderer_context
+            return self.contribute_to_response(
+                data=_data
             )
         # 加密响应数据
         try:
@@ -125,10 +125,8 @@ class EncryptedResponseRenderer(renderers.JSONRenderer, FormattedResponseRendere
             if not encrypted_data:
                 # 返回加密后的数据
                 raise Exception("加密失败，请联系管理员")
-            return super().render(
-                data=encrypted_data,
-                accepted_media_type=accepted_media_type,
-                renderer_context=renderer_context
+            return self.contribute_to_response(
+                data=encrypted_data
             )
         except Exception as e:
             # 加密失败，记录错误但继续返回明文
@@ -142,8 +140,16 @@ class EncryptedResponseRenderer(renderers.JSONRenderer, FormattedResponseRendere
                 nonce=nonce,
                 timestamp=timestamp
             )
-            return super().render(
-                data=_data,
-                accepted_media_type=accepted_media_type,
-                renderer_context=renderer_context
+            return self.contribute_to_response(
+                data=_data
             )
+
+    def contribute_to_response(self, data):
+        """
+        为响应添加自定义头
+        """
+        if isinstance(data, (dict, list)):
+            # 简单示范：把结构体打成 key=value 一行一个
+            lines = [f"{k}={v}" for k, v in data.items()] if isinstance(data, dict) else [str(item) for item in data]
+            return "\n".join(lines).encode(self.charset)
+        return str(data).encode(self.charset)
