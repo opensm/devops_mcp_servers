@@ -45,6 +45,10 @@ class WechatRobotQuestionSerializer(serializers.ModelSerializer):
         })
         return super().to_internal_value(data)
 
+    def validate_stream(self, attrs):
+        logger.debug(f"验证stream数据: {attrs}")
+        return attrs
+
     def create(self, validated_data):
         logger.debug(f"保存数据: {validated_data}")
         if validated_data.get('msgtype', "") == "stream":
