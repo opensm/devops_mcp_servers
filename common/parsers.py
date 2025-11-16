@@ -47,7 +47,7 @@ class EncryptedDataParser(parsers.JSONParser):
             msg_crypt_helper = MsgCryptHelper(
                 sToken=settings.WECHAT_TOKEN,
                 sEncodingAESKey=settings.WECHAT_ENCODING_AES_KEY,
-                sReceiveId=settings.WECHAT_CORP_ID_OR_APP_ID
+                sReceiveId=""
             )
             logger.debug(f"开始解密数据: {parsed_data}")
             # 解密数据
