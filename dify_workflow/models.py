@@ -1,6 +1,7 @@
 import uuid
 from django.db import models
 from django.core.serializers.json import DjangoJSONEncoder
+from wechat_robot.models import WechatRobotQuestion
 
 
 class WorkflowRun(models.Model):
