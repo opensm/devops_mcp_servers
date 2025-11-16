@@ -118,8 +118,6 @@ class EncryptedResponseRenderer(renderers.JSONRenderer, FormattedResponseRendere
                 nonce,
                 timestamp
             )
-            _temp_dta = self.encode_object.decrypt_msg(encrypted_data=encrypted_data, nonce=nonce, timestamp=timestamp)
-            logger.debug(f"测试解密后的数据: {_temp_dta}")
             logger.debug(f"加密后的数据: {encrypted_data}")
 
             if not encrypted_data:
