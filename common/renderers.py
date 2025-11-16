@@ -13,7 +13,7 @@ class FormattedResponseRenderer:
     encode_object = MsgCryptHelper(
         sToken=settings.WECHAT_TOKEN,
         sEncodingAESKey=settings.WECHAT_ENCODING_AES_KEY,
-        sReceiveId=settings.WECHAT_CORP_ID_OR_APP_ID
+        sReceiveId=""
     )
 
     def format_wechat_response(self, data, receiveid, nonce, timestamp, **kwargs):

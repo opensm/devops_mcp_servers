@@ -15,14 +15,18 @@ class WechatRobotQuestionBase(models.Model):
     create_time = models.DateTimeField(auto_now_add=True, verbose_name="创建时间")
     update_time = models.DateTimeField(auto_now=True, verbose_name="更新时间")
 
+    class Meta:
+        abstract = True
+
 
 # { "msgid":"74ac2a01537faf17e83e248a1ac7fd4c","aibotid":"aibrGalbJc-O4nrQRGAGLjNTIk8PpdhpCje",
 # "chatid":"wrck4BDQAAWHKnqDvlif4Mp9tYXHMuuQ","chattype":"group","from":
 # {"userid":"ky005509"},"msgtype":"text","text":{"content":"@姚绍强 你好"}}
 
 class WechatRobotQuestion(WechatRobotQuestionBase):
+    import uuid
     text = models.JSONField(default={}, null=False, blank=False)
-    stream_id = models.CharField(max_length=36, null=True, default="")
+    stream_id = models.UUIDField(null=False, blank=False, default=uuid.uuid4, primary_key=True, editable=False)
 
 
 # {'msgid': '2cea1e14656ba7c3810a3c6841e18a68', 'aibotid': 'aibrGalbJc-O4nrQRGAGLjNTIk8PpdhpCje',
