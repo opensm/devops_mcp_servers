@@ -38,7 +38,7 @@ class WechatRobotQuestionSerializer(serializers.ModelSerializer):
         chat_from = data.pop("from")
         data.update({
             "stream": stream['id'],
-            "from": chat_from['userid']
+            "chat_from": chat_from['userid']
         })
         return super().to_internal_value(data)
 
