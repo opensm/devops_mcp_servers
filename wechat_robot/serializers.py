@@ -41,7 +41,7 @@ class WechatRobotQuestionSerializer(serializers.ModelSerializer):
         if validated_data.get('msgtype', "") == "stream":
             try:
                 stream_id = validated_data.get('stream', {}).get('id', False)
-                robt_instance = WechatRobotQuestion.objects.get(stream_id=stream_id)
+                robt_instance = WechatRobotQuestion.objects.get(stream=stream_id)
                 return robt_instance
             except WechatRobotQuestion.DoesNotExist:
                 logger.error(f"当前请求为流数据，但是未查询到数据: {validated_data}")
