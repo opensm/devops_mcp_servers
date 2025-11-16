@@ -22,11 +22,11 @@ class WechatRobotQuestionSerializer(serializers.ModelSerializer):
 
     def get_content(self, obj):
         _time = (timezone.now() - obj.create_time).total_seconds()
-        if not obj.WechatRobotQuestion and _time < 120:
+        if not obj.workflow_runs and _time < 120:
             return "当前机器人正在处理中，请稍等"
-        elif not obj.WechatRobotQuestion and _time >= 120:
+        elif not obj.workflow_runs and _time >= 120:
             return "当前机器人没有处理该问题，请稍后再试"
-        return obj.WechatRobotQuestion.content
+        return ""
 
     def get_finish(self, obj):
         _time = (timezone.now() - obj.create_time).total_seconds()
