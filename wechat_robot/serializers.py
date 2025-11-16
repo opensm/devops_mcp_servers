@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from wechat_robot.models import *
 from django.utils import timezone
+from common.loger import logger
 
 
 class WechatRobotQuestionDataSerializer(serializers.ModelSerializer):
@@ -22,11 +23,12 @@ class WechatRobotQuestionSerializer(serializers.ModelSerializer):
 
     def get_content(self, obj):
         _time = (timezone.now() - obj.create_time).total_seconds()
+        logger.debug(f"{obj.id} 数据时间差为：{_time}")
         if not obj.workflow_runs and _time < 120:
             return "当前机器人正在处理中，请稍等"
         elif not obj.workflow_runs and _time >= 120:
             return "当前机器人没有处理该问题，请稍后再试"
-        return ""
+        return "测试数据"
 
     def get_finish(self, obj):
         _time = (timezone.now() - obj.create_time).total_seconds()
