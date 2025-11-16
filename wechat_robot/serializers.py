@@ -32,7 +32,7 @@ class WechatRobotQuestionSerializer(serializers.ModelSerializer):
             return True
         return False
 
-    def validate(self, attrs):
+    def validate_stream(self, attrs):
         logger.debug(f"验证数据: {attrs}")
         return attrs
 
