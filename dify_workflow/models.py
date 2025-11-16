@@ -6,12 +6,17 @@ from django.core.serializers.json import DjangoJSONEncoder
 class WorkflowRun(models.Model):
     """存储工作流运行的基本信息"""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    robot_task = models.ForeignKey(
+        'WechatRobotQuestion',
+        verbose_name="机器人ID", on_delete=models.CASCADE, related_name='workflow_runs', null=True
+    )
     event = models.CharField(max_length=100, verbose_name="事件", default="workflow_started")
     conversation_id = models.UUIDField(verbose_name="运行ID")
     message_id = models.UUIDField(verbose_name="消息ID")
     task_id = models.UUIDField(verbose_name="任务ID")
     workflow_run_id = models.UUIDField(verbose_name="工作流运行ID")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="创建时间")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="更新时间")
 
     class Meta:
         indexes = [

@@ -15,6 +15,7 @@ class WechatRobotQuestionSerializer(serializers.ModelSerializer):
     # chattype = serializers.CharField(max_length=36, source="chat_type")
     # # from = serializers.JSONField(source="from")
     # msgtype = serializers.ChoiceField(choices=(("text", "text"), ("stream", "stream")), source="msg_type")
+    chat_from = serializers.JSONField(source="chat_from", field_name="from")
 
     class Meta:
         model = WechatRobotQuestion
