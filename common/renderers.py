@@ -22,7 +22,7 @@ class FormattedResponseRenderer:
         """
         if isinstance(data, dict):
             # 获取响应数据中的msgid
-            stream_id = data.get('stream_id')
+            stream_id = data.get('stream')
             # 获取响应数据中的aibotid
             finish = data.get('finish')
             # 获取响应数据中的chatid
