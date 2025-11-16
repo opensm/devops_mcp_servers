@@ -21,17 +21,17 @@ class WechatRobotQuestionView(ListCreateAPIView):
     parser_classes = [EncryptedDataParser]
     renderer_classes = [EncryptedResponseRenderer]
 
-    @transaction.atomic  # 可选，保证并发安全
-    def perform_create(self, serializer):
-        if serializer.validated_data.get('msgtype', "") == "stream":
-            try:
-                stream_id = serializer.validated_data.get('stream', {}).get('id', False)
-                robt_instance = WechatRobotQuestion.objects.get(stream=stream_id)
-            except WechatRobotQuestion.DoesNotExist:
-                logger.error(f"当前请求为流数据，但是未查询到数据: {serializer.validated_data}")
-        else:
-            logger.debug(f"保存数据: {serializer.validated_data}")
-            serializer.save()
+    # @transaction.atomic  # 可选，保证并发安全
+    # def perform_create(self, serializer):
+    #     if serializer.validated_data.get('msgtype', "") == "stream":
+    #         try:
+    #             stream_id = serializer.validated_data.get('stream', {}).get('id', False)
+    #             robt_instance = WechatRobotQuestion.objects.get(stream=stream_id)
+    #         except WechatRobotQuestion.DoesNotExist:
+    #             logger.error(f"当前请求为流数据，但是未查询到数据: {serializer.validated_data}")
+    #     else:
+    #         logger.debug(f"保存数据: {serializer.validated_data}")
+    #         serializer.save()
 
         # # 利用唯一索引，先查是否存在
         # if WechatRobotQuestion.objects.filter(sku_code=sku_code).exists():
