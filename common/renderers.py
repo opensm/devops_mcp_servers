@@ -74,7 +74,7 @@ class EncryptedResponseRenderer(renderers.JSONRenderer, FormattedResponseRendere
     """
     自定义渲染器，用于加密响应数据
     """
-    media_type = 'application/json'
+    media_type = 'text/plain'
     format = 'json'
 
     _error_message = "系统错误，请联系管理员"
