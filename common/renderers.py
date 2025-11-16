@@ -121,10 +121,10 @@ class EncryptedResponseRenderer(renderers.JSONRenderer, FormattedResponseRendere
             logger.debug(f"加密后的数据: {encrypted_data}")
 
             time_ = self.encode_object.decrypt_msg(
-                encrypted_data='{"encrypt":"IOjxfCKyT1cn8zHF+2S0cN7oK+Cfq5UZTXr/0Tfdedddzs0BtvMM2WSh7KT4Ext7IuxrDVYg3OLs+TFAID7NPliXWZrsZv39ug5RLUDe84HS9emuOYR+rLFNMAJpFoItVAM1p5HkbncpOpsoKpriyPjChwy42Qc3bR8lnVebhWRNe7xiKxyNP1je12LzxqFK9YoVS3Hmv0gnnxnzVZIatCakLUBmts2rsfQIZL76HJDju1lQoBk6RuCWXEeSf8uogvx3PEKNQSYFtkw4dQSh5vOtDEFwOKf1np0TwK7em9/YbO7WA3vrb29rYSKGhu/JK7nNcH5p76aohNl9p1zil63dzhUSB/G++xodGW6jiTQOpTPDs36XOYVgUUn7t7xVfLAIGrmBQZ0PRyfTEJgqJehkibYMN8fNBVALK/RURQcjrp6k6Q7UHwF1PyLCSfg+5TOy61IYrN9ft9KwLGD9cj7DKVJtcBvUPC4hZhNoPxElaKR6oeHTBRGWtAv9wUafUfFdDrz0+eDL96U8YZqN0rSuvW0vzQFFN/8CXoqgCV0="}',
-                msg_signature="6536e7a4e5b95a95567bff1030c3f32982765216",
-                timestamp="1763271890",
-                nonce="1762761344"
+                encrypted_data='{"encrypt":"WMyxqY7oZnFhJhizh/UB6PSViGoUXf4+Tw0MjyB9nCb+rZMAdecVrpQ19/HXgxj9rR2YJeNcsf8/+TR6rp+zsPYw+MBkN+bSgMZRyPcufhYD1sjjwVgnWO9g09z9VMfATWaiIxl6nIgyJoJmbloFR7xxJtmh4QjmYy2iPl/VZCvqw1lrjzaMeT1YhY2jztPLJ326i/ivtY2XJJ57/WTTbw=="}',
+                msg_signature="ffafc861f1c89702dc65d5ad67154f8a24e84f7f",
+                timestamp="1763272415",
+                nonce="1762656966"
             )
             logger.debug(f"解密后的数据: {time_}")
 
