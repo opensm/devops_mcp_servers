@@ -83,7 +83,7 @@ class EncryptedResponseRenderer(renderers.JSONRenderer, FormattedResponseRendere
         # 获取请求和响应对象
         request = renderer_context['request']
         response = renderer_context['response']
-        logger.debug(f"返回数据: {data}, media type {accepted_media_type} context {renderer_context}")
+        logger.debug(f"返回数据: {data}, media type {self.media_type} context {renderer_context}")
         # 从查询参数获取加密所需参数
         nonce = request.query_params.get('nonce')
         timestamp = request.query_params.get('timestamp')
@@ -94,7 +94,7 @@ class EncryptedResponseRenderer(renderers.JSONRenderer, FormattedResponseRendere
         receiveid = request.query_params.get('receiveid', '')
 
         # 设置响应头
-        response['Content-Type'] = 'application/json'
+        response['Content-Type'] = self.media_type
 
         # 检查是否需要加密响应
         should_encrypt = all([nonce, timestamp]) and request.method in ['POST', 'PUT', 'PATCH']
@@ -110,7 +110,7 @@ class EncryptedResponseRenderer(renderers.JSONRenderer, FormattedResponseRendere
                 timestamp=timestamp
             )
             # 不需要加密，返回原始JSON数据
-            return super().render(_data, accepted_media_type, renderer_context)
+            return super().render(_data, self.media_type, renderer_context)
         # 加密响应数据
         try:
             encrypted_data = self.format_wechat_response(
@@ -132,7 +132,7 @@ class EncryptedResponseRenderer(renderers.JSONRenderer, FormattedResponseRendere
             if not encrypted_data:
                 # 返回加密后的数据
                 raise Exception("加密失败，请联系管理员")
-            return super().render(encrypted_data, accepted_media_type, renderer_context)
+            return super().render(encrypted_data, self.media_type, renderer_context)
         except Exception as e:
             # 加密失败，记录错误但继续返回明文
             logger.error(f"响应加密失败: {str(e)}")
@@ -145,4 +145,4 @@ class EncryptedResponseRenderer(renderers.JSONRenderer, FormattedResponseRendere
                 nonce=nonce,
                 timestamp=timestamp
             )
-            return super().render(_data, accepted_media_type, renderer_context)
+            return super().render(_data, self.media_type, renderer_context)
