@@ -83,7 +83,7 @@ class EncryptedResponseRenderer(renderers.JSONRenderer, FormattedResponseRendere
         # 获取请求和响应对象
         request = renderer_context['request']
         response = renderer_context['response']
-        logger.debug(f"返回数据: {data}, media type {self.media_type} context {renderer_context}")
+        logger.debug(f"返回数据: {data}, media type {accepted_media_type} context {renderer_context}")
         # 从查询参数获取加密所需参数
         nonce = request.query_params.get('nonce')
         timestamp = request.query_params.get('timestamp')
