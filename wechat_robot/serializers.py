@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from wechat_robot.models import *
+from django.utils import timezone
 
 
 class WechatRobotQuestionDataSerializer(serializers.ModelSerializer):
@@ -20,8 +21,7 @@ class WechatRobotQuestionSerializer(serializers.ModelSerializer):
     finish = serializers.SerializerMethodField()
 
     def get_content(self, obj):
-        import datetime
-        _time = (obj.create_time - datetime.datetime.now()).total_seconds()
+        _time = (timezone.now() - obj.create_time).total_seconds()
         if not obj.WechatRobotQuestion and _time < 120:
             return "当前机器人正在处理中，请稍等"
         elif not obj.WechatRobotQuestion and _time >= 120:
