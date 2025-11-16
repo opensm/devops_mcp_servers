@@ -32,14 +32,15 @@ class FormattedResponseRenderer:
             content = "系统错误，请联系管理员"
             finish = True
 
-        response_data = {
+
+        response_data = json.dumps({
             "msgtype": "stream",
             "stream": {
                 "id": stream_id,
                 "finish": finish,
                 "content": content,
             }
-        }
+        }, ensure_ascii=False)
         _data = self.encode_object.encrypt_message(
             receiveid=receiveid,
             nonce=nonce,
@@ -52,19 +53,19 @@ class FormattedResponseRenderer:
         """
 
         """
-        data = {
+        response_data = json.dumps({
             "msgtype": "stream",
             "stream": {
                 "id": stream_id,
                 "finish": finish,
                 "content": content,
             }
-        }
+        }, ensure_ascii=False)
         _data = self.encode_object.encrypt_message(
             receiveid=receiveid,
             nonce=nonce,
             timestamp=timestamp,
-            data=data
+            data=response_data
         )
         return _data
 
