@@ -28,7 +28,7 @@ class WechatRobotQuestionSerializer(serializers.ModelSerializer):
             return "当前机器人正在处理中，请稍等"
         elif not obj.workflow_runs and _time >= 120:
             return "当前机器人没有处理该问题，请稍后再试"
-        return "测试数据"
+        return "测试数据: {}".format(_time)
 
     def get_finish(self, obj):
         _time = (timezone.now() - obj.create_time).total_seconds()
