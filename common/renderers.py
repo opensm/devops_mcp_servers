@@ -32,7 +32,6 @@ class FormattedResponseRenderer:
             content = "系统错误，请联系管理员"
             finish = True
 
-
         response_data = json.dumps({
             "msgtype": "stream",
             "stream": {
@@ -74,8 +73,6 @@ class EncryptedResponseRenderer(renderers.JSONRenderer, FormattedResponseRendere
     """
     自定义渲染器，用于加密响应数据
     """
-    media_type = 'text/plain'
-    format = 'json'
 
     _error_message = "系统错误，请联系管理员"
 
@@ -110,7 +107,11 @@ class EncryptedResponseRenderer(renderers.JSONRenderer, FormattedResponseRendere
                 timestamp=timestamp
             )
             # 不需要加密，返回原始JSON数据
-            return super().render(_data, self.media_type, renderer_context)
+            return super().render(
+                data=_data,
+                accepted_media_type=accepted_media_type,
+                renderer_context=renderer_context
+            )
         # 加密响应数据
         try:
             encrypted_data = self.format_wechat_response(
@@ -121,18 +122,14 @@ class EncryptedResponseRenderer(renderers.JSONRenderer, FormattedResponseRendere
             )
             logger.debug(f"加密后的数据: {encrypted_data}")
 
-            time_ = self.encode_object.decrypt_msg(
-                encrypted_data='{"encrypt":"w6k5If77mIX8aBhlg1V/2mxrUybKC0qz+J/QTSFUPTKixmv2TriqNI2RG3nteRZG6SMMcIw6qoVTMPzpyRi4wBEPGI8qYwE+bkRkhxHc2OS+W+kTWY26D8534uqb7QIRTOW58bAGcjJ0SE1qYt8L+yFhsaJOsJql0Fcb3IL/3FQpDbAN5ospLMAydIDaxft0Fcz2DDWsV3i3iTZYdjgXRw=="}',
-                msg_signature="d3c4973e820687041cc32164207020de1b5ce7f4",
-                timestamp="1763279166",
-                nonce="1763422377"
-            )
-            logger.debug(f"解密后的数据: {time_}")
-
             if not encrypted_data:
                 # 返回加密后的数据
                 raise Exception("加密失败，请联系管理员")
-            return super().render(encrypted_data, self.media_type, renderer_context)
+            return super().render(
+                data=encrypted_data,
+                accepted_media_type=accepted_media_type,
+                renderer_context=renderer_context
+            )
         except Exception as e:
             # 加密失败，记录错误但继续返回明文
             logger.error(f"响应加密失败: {str(e)}")
@@ -145,4 +142,8 @@ class EncryptedResponseRenderer(renderers.JSONRenderer, FormattedResponseRendere
                 nonce=nonce,
                 timestamp=timestamp
             )
-            return super().render(_data, self.media_type, renderer_context)
+            return super().render(
+                data=_data,
+                accepted_media_type=accepted_media_type,
+                renderer_context=renderer_context
+            )

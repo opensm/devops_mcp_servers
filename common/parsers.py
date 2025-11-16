@@ -35,7 +35,6 @@ class EncryptedDataParser(parsers.JSONParser):
         if not all([msg_signature, timestamp, nonce]):
             return parsed_data  # 如果没有必要参数，返回原始数据
         logger.debug("原始数据: %s", parsed_data)
-        logger.debug("原始数据类型: %s", type(parsed_data))
         # 检查数据是否加密
         if 'encrypt' in parsed_data:
             logger.debug("输出参数：token:{},key:{},ID:{}".format(
