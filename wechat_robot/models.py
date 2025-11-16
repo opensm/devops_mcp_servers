@@ -25,7 +25,7 @@ class WechatRobotQuestionBase(models.Model):
 
 class WechatRobotQuestion(WechatRobotQuestionBase):
     import uuid
-    text = models.JSONField(default={}, null=False, blank=False)
+    text = models.JSONField(default="", null=False, blank=False)
     stream_id = models.UUIDField(null=False, blank=False, default=uuid.uuid4, primary_key=True, editable=False)
 
 
@@ -34,4 +34,4 @@ class WechatRobotQuestion(WechatRobotQuestionBase):
 # 'msgtype': 'stream', 'stream': {'id': 'dify::aibrGalbJc-O4nrQRGAGLjNTIk8PpdhpCje:wrck4BDQAAWHKnqDvlif4Mp9tYXHMuuQ:V8hgz9vBFW'
 # }}
 class WechatRobotQuestionData(WechatRobotQuestionBase):
-    stream = models.JSONField(default={}, null=False, blank=False)
+    stream = models.JSONField(default=dict(), null=False, blank=False)
