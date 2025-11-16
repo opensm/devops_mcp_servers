@@ -44,7 +44,7 @@ class FormattedResponseRenderer:
             receiveid=receiveid,
             nonce=nonce,
             timestamp=timestamp,
-            data=data
+            data=response_data
         )
         return _data
 
