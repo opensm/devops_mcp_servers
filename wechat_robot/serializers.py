@@ -12,7 +12,6 @@ class WechatRobotQuestionDataSerializer(serializers.ModelSerializer):
 
 class WechatRobotQuestionSerializer(serializers.ModelSerializer):
     content = serializers.SerializerMethodField()
-    finish = serializers.SerializerMethodField()
 
     def get_content(self, obj):
         logger.debug(f"类型数据为：{obj}")
