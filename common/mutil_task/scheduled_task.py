@@ -1,6 +1,6 @@
 from apscheduler.schedulers.background import BackgroundScheduler
 from django_apscheduler.jobstores import DjangoJobStore
-from thread_pool_task import crontab_run_dify_job
+from common.mutil_task.thread_pool_task import crontab_run_dify_job
 
 
 def start():
