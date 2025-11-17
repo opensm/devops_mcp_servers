@@ -125,3 +125,7 @@ LOGLEVEL = os.environ.get('LOGLEVEL', 'INFO').upper()
 WECHAT_TOKEN = os.environ.get('WECHAT_TOKEN', None)
 WECHAT_ENCODING_AES_KEY = os.environ.get('WECHAT_ENCODING_AES_KEY', None)
 WECHAT_CORP_ID_OR_APP_ID = os.environ.get('WECHAT_CORP_ID_OR_APP_ID', None)
+
+# DIfy 配置
+DIFY_API_KEY = os.environ.get('DIFY_API_KEY', None)
+DIFY_API_URL = os.environ.get('DIFY_API_URL', None)

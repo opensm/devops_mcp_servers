@@ -3,23 +3,28 @@ import threading
 from concurrent.futures import ThreadPoolExecutor
 from wechat_robot.models import WechatRobotQuestion
 from common.loger import logger
+from common.dify_workflow import DifyChatClient
 
 # 全局内存锁 + 已处理集合（线程安全）
 lock = threading.Lock()
 processing = set()  # 存放正在被处理的机器人任务 id
 
 
-def _process_one(order_id: int):
+def _process_one(stream_id: int):
     """真正耗时的工作，放锁外执行"""
-    logger.info('[Thread %s] 开始处理机器人任务 id=%s', threading.get_ident(), order_id)
-    time.sleep(3)  # 模拟耗时
-    # 更新数据库（乐观更新即可）
-    WechatRobotQuestion.objects.filter(pk=order_id, status='pending').update(status='running')
-    logger.info('[Thread %s] 机器人任务 id=%s 处理完成', threading.get_ident(), order_id)
+    logger.info('[Thread %s] 开始处理机器人任务 id=%s', threading.get_ident(), stream_id)
+    try:
+        dify = DifyChatClient()
+        dify.run_workflow(stream_id=stream_id)
+        # 更新数据库（乐观更新即可）
+        WechatRobotQuestion.objects.filter(stream=stream_id, status='pending').update(status='running')
+        logger.info('[Thread %s] 机器人任务 id=%s 处理完成', threading.get_ident(), stream_id)
+    except Exception as e:
+        logger.error('[Thread %s] 运行机器人任务 id=%s 失败：%s', threading.get_ident(), stream_id, e)
 
     # 处理完从集合里去掉
     with lock:
-        processing.discard(order_id)
+        processing.discard(stream_id)
 
 
 def crontab_run_dify_job():
@@ -35,9 +40,9 @@ def crontab_run_dify_job():
     to_handle = []
     with lock:
         for o in candidates:
-            if o.id not in processing:  # 未被其它线程抢
-                processing.add(o.id)
-                to_handle.append(o.id)
+            if o.stream not in processing:  # 未被其它线程抢
+                processing.add(o.stream)
+                to_handle.append(o.stream)
 
     if not to_handle:
         logger.info('本轮候选机器人任务都已在处理，直接返回。')

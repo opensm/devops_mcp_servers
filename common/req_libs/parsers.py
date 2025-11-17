@@ -1,7 +1,7 @@
 # parsers.py
 import json
 from rest_framework import parsers
-from common.msg_crypt_helper import MsgCryptHelper
+from common.req_libs.msg_crypt_helper import MsgCryptHelper
 from django.conf import settings
 from common.loger import logger
 

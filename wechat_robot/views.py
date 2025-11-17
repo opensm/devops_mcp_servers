@@ -1,8 +1,8 @@
 from rest_framework.generics import ListCreateAPIView
 from wechat_robot.models import WechatRobotQuestionData, WechatRobotQuestion
 from wechat_robot.serializers import WechatRobotQuestionDataSerializer, WechatRobotQuestionSerializer
-from common.parsers import EncryptedDataParser
-from common.renderers import EncryptedResponseRenderer
+from common.req_libs.parsers import EncryptedDataParser
+from common.req_libs.renderers import EncryptedResponseRenderer
 
 
 class WechatRobotQuestionDataView(ListCreateAPIView):

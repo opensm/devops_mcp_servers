@@ -24,14 +24,6 @@ class WechatRobotQuestionSerializer(serializers.ModelSerializer):
             return "当前机器人没有处理该问题，请稍后再试"
         return "测试数据: {}".format(_time)
 
-    def get_finish(self, obj):
-        _time = (timezone.now() - obj.create_time).total_seconds()
-        if obj.workflow_runs is None and _time < 120:
-            return False
-        elif obj.workflow_runs is None and _time >= 120:
-            return True
-        return False
-
     def to_internal_value(self, data):
         logger.debug(f"数据: {data}")
         if "stream" in data:
@@ -40,8 +32,10 @@ class WechatRobotQuestionSerializer(serializers.ModelSerializer):
                 "stream": stream['id'],
             })
         chat_from = data.pop("from")
+        text = data.pop("text")
         data.update({
-            "chat_from": chat_from['userid']
+            "chat_from": chat_from['userid'],
+            "text": text['content']
         })
         return super().to_internal_value(data)
 

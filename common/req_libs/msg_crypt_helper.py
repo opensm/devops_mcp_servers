@@ -1,6 +1,5 @@
 # utils/msg_crypt_helper.py
-import base64
-from common.WXBizJsonMsgCrypt import WXBizJsonMsgCrypt  # 根据您实际使用的库导入
+from common.req_libs.WXBizJsonMsgCrypt import WXBizJsonMsgCrypt  # 根据您实际使用的库导入
 from common.loger import logger
 import json
 

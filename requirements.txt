@@ -2,3 +2,4 @@ django
 djangorestframework
 pycryptodome
 django-apscheduler
+dify-client

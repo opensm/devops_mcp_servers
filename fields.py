@@ -1,6 +1,6 @@
 # fields.py
 from rest_framework import serializers
-from common.msg_crypt_helper import MsgCryptHelper
+from common.req_libs.msg_crypt_helper import MsgCryptHelper
 from django.conf import settings
 
 

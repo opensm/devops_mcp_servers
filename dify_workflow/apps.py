@@ -6,5 +6,5 @@ class DifyWorkflowConfig(AppConfig):
     name = 'dify_workflow'
 
     def ready(self):
-        from common.scheduled_task import start
+        from common.mutil_task.scheduled_task import start
         start()
