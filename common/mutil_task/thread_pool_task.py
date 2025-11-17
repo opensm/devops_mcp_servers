@@ -4,6 +4,8 @@ from concurrent.futures import ThreadPoolExecutor
 from wechat_robot.models import WechatRobotQuestion
 from common.loger import logger
 from common.dify_workflow import DifyChatClient
+from django.utils import timezone
+from datetime import timedelta
 
 # 全局内存锁 + 已处理集合（线程安全）
 lock = threading.Lock()
@@ -31,7 +33,10 @@ def crontab_run_dify_job():
     """主调度函数，每 5 秒跑一次"""
     logger.info('=== 新一轮调度开始 ===')
     # 1. 先快速捞一批 pending（不锁行）
-    candidates = list(WechatRobotQuestion.objects.filter(status='pending', create_time__gt=time.time() - 120)[:5])
+    candidates = list(WechatRobotQuestion.objects.filter(
+        status='pending',
+        create_time__gt=(timezone.now() - timedelta(seconds=120))
+    )[:5])
     if not candidates:
         logger.info('没有待处理机器人任务，本轮空跑。')
         return
