@@ -1,9 +1,12 @@
 import json
 from dify_client import ChatClient
+from django.core.serializers import serialize
+
 from devops_mcp_servers.settings import DIFY_API_KEY, DIFY_API_URL
 from common.loger import logger
 from typing import Dict, Any
 from wechat_robot.models import WechatRobotQuestion
+from dify_workflow.serializers import WorkflowRunSerializer
 
 
 class DifyChatClient:
@@ -84,6 +87,9 @@ class DifyChatClient:
                         continue
                     logger.debug(f"当前任务:${task_key} 获取到的dify任务数据为：{json_data}")
                     data = json.loads(json_data)
+                    serializer = WorkflowRunSerializer(data=data, many=False)
+                    serializer.is_valid(raise_exception=True)
+                    serializer.save()
                     json_dump_data = json.dumps(data, indent=4)
                     logger.debug(f"当前任务:${task_key} 获取到的dify任务数据为：\n {json_dump_data}")
                     logger.debug(f"dify_收到当前返回的数据为：{data}")
@@ -108,7 +114,11 @@ class DifyChatClient:
         """
         logger.debug(f"开始发送dify工作流请求: {query}, {kwargs}, {task_key}........")
         response = self.send_message(query=query, user_id=user_id, inputs=inputs)
-        return self.process_stream_response(response=response, task_key=task_key, **kwargs)
+        return self.process_stream_response(
+            response=response,
+            task_key=task_key,
+            **kwargs
+        )
 
     def run_workflow(self, stream_id):
         """
@@ -117,7 +127,12 @@ class DifyChatClient:
         try:
             rebot_data = WechatRobotQuestion.objects.get(stream=stream_id)
             logger.info(f"任务：{rebot_data.stream} 运行中...")
-            self.chat(query=rebot_data.text, task_key=str(rebot_data.stream.bytes), user_id=rebot_data.chat_from)
+            self.chat(
+                query=rebot_data.text,
+                task_key=str(rebot_data.stream.bytes),
+                user_id=rebot_data.chat_from,
+                instance=rebot_data
+            )
         except WechatRobotQuestion.DoesNotExist:
             logger.error(f"任务不存在：{stream_id}")
             return
