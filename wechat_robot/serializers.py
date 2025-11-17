@@ -30,11 +30,15 @@ class WechatRobotQuestionSerializer(serializers.ModelSerializer):
             data.update({
                 "stream": stream['id'],
             })
+        if "text" in data.keys():
+            text = data.pop("text")
+            data.update({
+                "text": text['content']
+            })
         chat_from = data.pop("from")
-        text = data.pop("text")
         data.update({
             "chat_from": chat_from['userid'],
-            "text": text['content']
+
         })
         return super().to_internal_value(data)
 
