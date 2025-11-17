@@ -27,6 +27,13 @@ class WechatRobotQuestion(WechatRobotQuestionBase):
     import uuid
     text = models.JSONField(default="", null=False, blank=False)
     stream = models.UUIDField(null=False, blank=False, default=uuid.uuid4, unique=True)
+    finish = models.BooleanField(default=False, null=False)
+    status = models.CharField(
+        max_length=36,
+        choices=(("running", "运行中"), ("finished", "已完成"), ("pending", "待开始")),
+        default="pending",
+        null=False
+    )
 
 
 # {'msgid': '2cea1e14656ba7c3810a3c6841e18a68', 'aibotid': 'aibrGalbJc-O4nrQRGAGLjNTIk8PpdhpCje',

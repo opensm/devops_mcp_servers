@@ -47,10 +47,12 @@ class WechatRobotQuestionSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         logger.debug(f"保存数据: {validated_data}")
-        if validated_data.get('msgtype', "") == "stream":
+        if validated_data.get('msgtype', '') == "stream":
             try:
-                stream_id = validated_data.get('stream', "")
+                stream_id = validated_data.get('stream', '')
                 robt_instance = WechatRobotQuestion.objects.get(stream=stream_id)
+                robt_instance.update_time = timezone.now()
+                robt_instance.save()
                 return robt_instance
             except WechatRobotQuestion.DoesNotExist:
                 logger.error(f"当前请求为流数据，但是未查询到数据: {validated_data}")

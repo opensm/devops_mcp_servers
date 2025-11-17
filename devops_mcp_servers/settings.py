@@ -36,8 +36,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'dify_workflow',
-    #'mcp_server',
-    'wechat_robot'
+    # 'mcp_server',
+    'wechat_robot',
+    'django_apscheduler'
 ]
 
 MIDDLEWARE = [
