@@ -30,7 +30,7 @@ class WechatRobotQuestion(WechatRobotQuestionBase):
     finish = models.BooleanField(default=False, null=False)
     status = models.CharField(
         max_length=36,
-        choices=(("running", "运行中"), ("finished", "已完成"), ("pending", "待开始")),
+        choices=(("running", "运行中"), ("finished", "已完成"), ("pending", "待开始"), ("failed", "失败")),
         default="pending",
         null=False
     )

@@ -16,13 +16,14 @@ def _process_one(stream_id: int):
     """真正耗时的工作，放锁外执行"""
     logger.info('[Thread %s] 开始处理机器人任务 id=%s', threading.get_ident(), stream_id)
     try:
-        dify = DifyChatClient()
-        dify.run_workflow(stream_id=stream_id)
         # 更新数据库（乐观更新即可）
         WechatRobotQuestion.objects.filter(stream=stream_id, status='pending').update(status='running')
+        dify = DifyChatClient()
+        dify.run_workflow(stream_id=stream_id)
         logger.info('[Thread %s] 机器人任务 id=%s 处理完成', threading.get_ident(), stream_id)
     except Exception as e:
         logger.error('[Thread %s] 运行机器人任务 id=%s 失败：%s', threading.get_ident(), stream_id, e)
+        WechatRobotQuestion.objects.filter(stream=stream_id).update(status='failed')
 
     # 处理完从集合里去掉
     with lock:
