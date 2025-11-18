@@ -15,9 +15,10 @@ class WorkflowRun(models.Model):
     conversation_id = models.UUIDField(verbose_name="运行ID")
     message_id = models.UUIDField(verbose_name="消息ID")
     task_id = models.UUIDField(verbose_name="任务ID")
-    workflow_run_id = models.UUIDField(verbose_name="工作流运行ID")
+    workflow_run_id = models.UUIDField(verbose_name="工作流运行ID", null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="创建时间")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="更新时间")
+    data = models.JSONField(encoder=DjangoJSONEncoder, null=True, blank=True, verbose_name="数据")
 
     class Meta:
         indexes = [
