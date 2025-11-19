@@ -57,6 +57,7 @@ class WorkflowTaskSerializer(serializers.ModelSerializer):
             workflow_run_id=workflow_run_id,
             defaults={"robot_task": robot_task}
         )
+        data['workflow_run'] = dify_task
         logger.info(f"保存数据: 8")
         logger.info(f"1开始处理机器人任务 id={dify_task.id}, data={data}")
         if data is not None:
