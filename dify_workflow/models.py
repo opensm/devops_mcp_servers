@@ -40,9 +40,9 @@ class WorkflowRunData(models.Model):
     inputs = models.JSONField(encoder=DjangoJSONEncoder, null=True, blank=True)
     process_data = models.TextField(blank=True, null=True)
     outputs = models.JSONField(encoder=DjangoJSONEncoder, null=True, blank=True)
-    status = models.CharField(max_length=20, default='running')  # running, succeeded, failed
+    status = models.CharField(max_length=20, default='running', blank=True, null=True)  # running, succeeded, failed
     error = models.TextField(blank=True, null=True)
-    elapsed_time = models.FloatField(default=0.0)
+    elapsed_time = models.FloatField(default=0.0, blank=True, null=True)
     execution_metadata = models.JSONField(encoder=DjangoJSONEncoder, null=True, blank=True)
     metadata = models.JSONField(encoder=DjangoJSONEncoder, null=True, blank=True, verbose_name="模型数据")
     created_at = models.BigIntegerField(null=True, blank=True)
