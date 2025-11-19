@@ -32,6 +32,7 @@ class WorkflowTaskSerializer(serializers.ModelSerializer):
         用 update_or_create 处理 Category，
         然后同步 products（先删后插）。
         """
+        logger.debug(f"保存数据: {validated_data}")
         logger.info(f"保存数据: 1")
         data = validated_data.pop('data', None)
         logger.info(f"保存数据: 2")
