@@ -13,6 +13,9 @@ class WorkflowRunDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = WorkflowRunData
         fields = '__all__'
+        extra_kwargs = {
+            'workflow_run': {'validators': []},  # 把默认的 UniqueValidator 摘掉
+        }
 
 
 class WorkflowTaskSerializer(serializers.ModelSerializer):
@@ -21,9 +24,6 @@ class WorkflowTaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = WorkflowTask
         fields = '__all__'
-        extra_kwargs = {
-            'data': {'validators': []},  # 把默认的 UniqueValidator 摘掉
-        }
 
     def create(self, validated_data):
         """
