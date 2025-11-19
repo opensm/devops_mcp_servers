@@ -21,7 +21,7 @@ class WorkflowRunDataSerializer(serializers.ModelSerializer):
 
 
 class WorkflowTaskSerializer(serializers.ModelSerializer):
-    data = WorkflowRunDataSerializer()
+    data = WorkflowRunDataSerializer(required=False)
     event = serializers.CharField(max_length=100, default="workflow_started")
 
     class Meta:
