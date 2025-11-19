@@ -45,7 +45,7 @@ class WorkflowTaskSerializer(serializers.ModelSerializer):
         )
         if data:
             # 再批量新建
-            WorkflowRunData.objects.create(category=dify_task, event=event, **data)
+            WorkflowRunData.objects.create(workflow_run=dify_task, event=event, **data)
         return dify_task
 
 
