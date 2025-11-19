@@ -28,7 +28,7 @@ class WorkflowTaskSerializer(serializers.ModelSerializer):
         用 update_or_create 处理 Category，
         然后同步 products（先删后插）。
         """
-        data = validated_data.pop('data')
+        data = validated_data.pop('data', None)
         conversation_id = validated_data.pop('conversation_id')
         message_id = validated_data.pop('message_id')
         task_id = validated_data.pop('task_id')
