@@ -54,7 +54,7 @@ class WorkflowTaskSerializer(serializers.ModelSerializer):
             _data = {"robot_task": robot_task, "workflow_run_id": workflow_run_id}
         else:
             _data = {"robot_task": robot_task}
-        logger.info(f"保存数据: {_data}, {conversation_id}, {message_id}, {task_id}")
+        logger.info(f"保存数据11111: {_data}, {conversation_id}, {message_id}, {task_id}")
         dify_task, _ = WorkflowTask.objects.update_or_create(
             conversation_id=conversation_id,
             message_id=message_id,
