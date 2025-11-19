@@ -90,7 +90,8 @@ class DifyChatClient:
                     if data is None:
                         logger.warning(f"当前任务:${task_key} 获取到的dify任务数据为空，跳过！")
                         continue
-                    if data.get('event', '') not in ['message', 'message_end', 'workflow_finished', 'node_finished']:
+                    # if data.get('event', '') not in ['message', 'message_end', 'workflow_finished', 'node_finished']:
+                    if data.get('event', '') not in ['message', 'message_end']:
                         logger.debug(f"dify_收到当前返回的数据为：{data}")
                         continue
                     if "instance" not in kwargs.keys():
