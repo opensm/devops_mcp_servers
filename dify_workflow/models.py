@@ -17,6 +17,7 @@ class WorkflowTask(models.Model):
     workflow_run_id = models.UUIDField(verbose_name="工作流运行ID", null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="创建时间")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="更新时间")
+    answer = models.TextField(verbose_name="答案", null=True, blank=True)
 
     class Meta:
         indexes = [
