@@ -6,7 +6,7 @@ from devops_mcp_servers.settings import DIFY_API_KEY, DIFY_API_URL
 from common.loger import logger
 from typing import Dict, Any
 from wechat_robot.models import WechatRobotQuestion
-from dify_workflow.serializers import WorkflowRunSerializer
+from dify_workflow.serializers import WorkflowTaskSerializer
 
 
 class DifyChatClient:
@@ -87,12 +87,24 @@ class DifyChatClient:
                         continue
                     logger.debug(f"当前任务:${task_key} 获取到的dify任务数据为：{json_data}")
                     data = json.loads(json_data)
-                    serializer = WorkflowRunSerializer(data=data, many=False)
+                    if data is None:
+                        logger.warning(f"当前任务:${task_key} 获取到的dify任务数据为空，跳过！")
+                        continue
+                    if data.get('event') not in ['message', 'message_end', 'workflow_finished', 'node_finished']:
+                        logger.debug(f"dify_收到当前返回的数据为：{data}")
+                        continue
+                    if "instance" not in kwargs.keys():
+                        logger.error(f"当前任务:${task_key} 获取到的dify任务数据为空，跳过！")
+                    instance = kwargs.get("instance", None)
+                    if instance is None:
+                        logger.error(f"当前任务:${task_key} 获取到的dify任务数据为空，跳过！")
+                        continue
+                    data["robot_task"] = instance
+                    serializer = WorkflowTaskSerializer(data=data, many=False)
                     serializer.is_valid(raise_exception=True)
                     serializer.save()
                     json_dump_data = json.dumps(data, indent=4)
                     logger.info(f"当前任务:${task_key} 获取到的dify任务数据为：\n {json_dump_data}")
-                    logger.debug(f"dify_收到当前返回的数据为：{data}")
                 except json.JSONDecodeError as e:
                     # 记录JSON解析错误但不中断流
                     logger.error(f"当前任务, [JSON解析错误: {e}]", end='')

@@ -4,21 +4,19 @@ from django.core.serializers.json import DjangoJSONEncoder
 from wechat_robot.models import WechatRobotQuestion
 
 
-class WorkflowRun(models.Model):
+class WorkflowTask(models.Model):
     """存储工作流运行的基本信息"""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     robot_task = models.ForeignKey(
         WechatRobotQuestion,
         verbose_name="机器人ID", on_delete=models.CASCADE, related_name='workflow_runs', null=True
     )
-    event = models.CharField(max_length=100, verbose_name="事件", default="workflow_started")
     conversation_id = models.UUIDField(verbose_name="运行ID")
     message_id = models.UUIDField(verbose_name="消息ID")
     task_id = models.UUIDField(verbose_name="任务ID")
     workflow_run_id = models.UUIDField(verbose_name="工作流运行ID", null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="创建时间")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="更新时间")
-    data = models.JSONField(encoder=DjangoJSONEncoder, null=True, blank=True, verbose_name="数据")
 
     class Meta:
         indexes = [
@@ -29,10 +27,11 @@ class WorkflowRun(models.Model):
         ]
 
 
-class NodeExecution(models.Model):
+class WorkflowRunData(models.Model):
     """存储节点执行信息"""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    workflow_run = models.ForeignKey(WorkflowRun, on_delete=models.CASCADE, related_name='nodes')
+    workflow_run = models.ForeignKey(WorkflowTask, on_delete=models.CASCADE, related_name='data')
+    event = models.CharField(max_length=100, verbose_name="事件", default="workflow_started")
     node_id = models.CharField(max_length=100)
     node_type = models.CharField(max_length=50)
     title = models.CharField(max_length=200)
@@ -45,6 +44,7 @@ class NodeExecution(models.Model):
     error = models.TextField(blank=True)
     elapsed_time = models.FloatField(default=0.0)
     execution_metadata = models.JSONField(encoder=DjangoJSONEncoder, null=True, blank=True)
+    metadata = models.JSONField(encoder=DjangoJSONEncoder, null=True, blank=True, verbose_name="模型数据")
     created_at = models.DateTimeField(auto_now_add=True)
     finished_at = models.DateTimeField(null=True, blank=True)
 
@@ -67,9 +67,9 @@ class NodeExecution(models.Model):
 class AgentLog(models.Model):
     """存储代理执行日志"""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    node = models.ForeignKey(NodeExecution, on_delete=models.CASCADE, related_name='agent_logs')
     node_execution_id = models.UUIDField()  # 原始日志中的ID
-    label = models.CharField(max_length=200)
+    label = models.CharField(max_length=200, blank=True, default="")
+    node_id = models.CharField(max_length=100, blank=True, default="")
     parent_id = models.UUIDField(null=True, blank=True)
     error = models.TextField(blank=True)
     status = models.CharField(max_length=20)  # start, success, error
@@ -87,6 +87,6 @@ class AgentLog(models.Model):
 
 __all__ = [
     'AgentLog',
-    'NodeExecution',
-    'WorkflowRun'
+    'WorkflowRunData',
+    'WorkflowTask'
 ]
