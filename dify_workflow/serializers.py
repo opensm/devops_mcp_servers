@@ -10,6 +10,8 @@ class AgentLogSerializer(serializers.ModelSerializer):
 
 
 class WorkflowRunDataSerializer(serializers.ModelSerializer):
+    workflow_run = serializers.HiddenField(default=None)
+
     class Meta:
         model = WorkflowRunData
         fields = '__all__'
