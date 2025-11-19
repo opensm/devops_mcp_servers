@@ -15,22 +15,30 @@ class WechatRobotQuestionSerializer(serializers.ModelSerializer):
 
     def get_content(self, obj: WechatRobotQuestion):
         logger.debug(f"类型数据为：{obj}")
-        _time = (timezone.now() - obj.create_time).total_seconds()
-        logger.debug(f"{obj.id} 数据时间差为：{_time},数据为：{obj.workflow_runs}")
-        if obj.workflow_runs.all().count() == 0 and _time < 120:
-            return "当前机器人正在处理中，请稍等"
-        elif obj.workflow_runs.all().count() == 0 and _time >= 120:
-            obj.finish = True
-            obj.save()
-            return "当前机器人没有处理该问题，请稍后再试"
-        else:
-            if not obj.workflow_runs.all()[0].answer and _time >= 120:
+        elapsed_seconds = (timezone.now() - obj.create_time).total_seconds()
+        logger.debug(f"{obj.id} 数据时间差为：{elapsed_seconds}, 数据为：{obj.workflow_runs}")
+
+        TIMEOUT_SECONDS = 120
+        workflow_runs = obj.workflow_runs.all()
+
+        if workflow_runs.count() == 0:
+            if elapsed_seconds < TIMEOUT_SECONDS:
+                return "当前机器人正在处理中，请稍等"
+            else:
                 obj.finish = True
                 obj.save()
                 return "当前机器人没有处理该问题，请稍后再试"
-            elif not obj.workflow_runs.all()[0].answer and _time < 120:
+
+        first_run = workflow_runs[0]
+        if not first_run.answer:
+            if elapsed_seconds >= TIMEOUT_SECONDS:
+                obj.finish = True
+                obj.save()
+                return "当前机器人没有处理该问题，请稍后再试"
+            else:
                 return "当前机器人正在处理中，请稍等"
-            return obj.workflow_runs.all()[0].answer
+
+        return first_run.answer
 
     def to_internal_value(self, data):
         logger.debug(f"数据: {data}")
