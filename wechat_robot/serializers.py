@@ -13,15 +13,22 @@ class WechatRobotQuestionDataSerializer(serializers.ModelSerializer):
 class WechatRobotQuestionSerializer(serializers.ModelSerializer):
     content = serializers.SerializerMethodField()
 
-    def get_content(self, obj):
+    def get_content(self, obj: WechatRobotQuestion):
         logger.debug(f"类型数据为：{obj}")
         _time = (timezone.now() - obj.create_time).total_seconds()
         logger.debug(f"{obj.id} 数据时间差为：{_time},数据为：{obj.workflow_runs}")
-        if obj.workflow_runs is None and _time < 120:
+        if obj.workflow_runs.all().count() == 0 and _time < 120:
             return "当前机器人正在处理中，请稍等"
-        elif obj.workflow_runs is None and _time >= 120:
+        elif obj.workflow_runs.all().count() == 0 and _time >= 120:
+            obj.finish = True
             return "当前机器人没有处理该问题，请稍后再试"
-        return "测试数据: {}".format(_time)
+        else:
+            if not obj.workflow_runs.all()[0].answer and _time >= 120:
+                obj.finish = True
+                return "当前机器人没有处理该问题，请稍后再试"
+            elif not obj.workflow_runs.all()[0].answer and _time < 120:
+                return "当前机器人正在处理中，请稍等"
+            return obj.workflow_runs.all()[0].answer
 
     def to_internal_value(self, data):
         logger.debug(f"数据: {data}")
