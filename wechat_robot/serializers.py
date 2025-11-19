@@ -26,6 +26,7 @@ class WechatRobotQuestionSerializer(serializers.ModelSerializer):
                 obj.finish = True
                 obj.save()
                 return "当前机器人没有处理该问题，请稍后再试"
+            return  ""
 
         first_run = workflow_runs[0]
         if not first_run.answer:
