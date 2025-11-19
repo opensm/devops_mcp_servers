@@ -54,7 +54,6 @@ class WorkflowTaskSerializer(serializers.ModelSerializer):
             conversation_id=conversation_id,
             message_id=message_id,
             task_id=task_id,
-            workflow_run_id=workflow_run_id,
             defaults={"robot_task": robot_task}
         )
         data['workflow_run'] = dify_task
