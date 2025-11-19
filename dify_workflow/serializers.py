@@ -44,17 +44,21 @@ class WorkflowTaskSerializer(serializers.ModelSerializer):
         logger.info(f"保存数据: 4")
         task_id = validated_data.pop('task_id')
         logger.info(f"保存数据: 5")
-        workflow_run_id = validated_data.pop('workflow_run_id')
+        workflow_run_id = validated_data.pop('workflow_run_id', None)
         logger.info(f"保存数据: 5")
         event = validated_data.pop('event'),
         logger.info(f"保存数据: 6")
         robot_task = validated_data.pop('robot_task')
         logger.info(f"保存数据: 7")
+        if workflow_run_id:
+            _data = {"robot_task": robot_task, "workflow_run_id": workflow_run_id}
+        else:
+            _data = {"robot_task": robot_task}
         dify_task, _ = WorkflowTask.objects.update_or_create(
             conversation_id=conversation_id,
             message_id=message_id,
             task_id=task_id,
-            defaults={"robot_task": robot_task}
+            defaults=_data
         )
         data['workflow_run'] = dify_task
         logger.info(f"保存数据: 8")
