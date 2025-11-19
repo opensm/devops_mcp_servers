@@ -34,6 +34,7 @@ class WorkflowTaskSerializer(serializers.ModelSerializer):
         用 update_or_create 处理 Category，
         然后同步 products（先删后插）。
         """
+        logger.info(f"开始处理机器人任务 data={validated_data}")
         data = validated_data.pop('data', None)
         conversation_id = validated_data.pop('conversation_id')
         message_id = validated_data.pop('message_id')
