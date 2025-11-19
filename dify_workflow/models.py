@@ -36,25 +36,25 @@ class WorkflowRunData(models.Model):
     node_type = models.CharField(max_length=50)
     title = models.CharField(max_length=200)
     index = models.IntegerField()
-    predecessor_node_id = models.CharField(max_length=100, blank=True)
+    predecessor_node_id = models.CharField(max_length=100, blank=True, null=True)
     inputs = models.JSONField(encoder=DjangoJSONEncoder, null=True, blank=True)
-    process_data = models.TextField(blank=True)
+    process_data = models.TextField(blank=True, null=True)
     outputs = models.JSONField(encoder=DjangoJSONEncoder, null=True, blank=True)
     status = models.CharField(max_length=20, default='running')  # running, succeeded, failed
-    error = models.TextField(blank=True)
+    error = models.TextField(blank=True, null=True)
     elapsed_time = models.FloatField(default=0.0)
     execution_metadata = models.JSONField(encoder=DjangoJSONEncoder, null=True, blank=True)
     metadata = models.JSONField(encoder=DjangoJSONEncoder, null=True, blank=True, verbose_name="模型数据")
-    created_at = models.DateTimeField(auto_now_add=True)
-    finished_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.BigIntegerField(null=True, blank=True)
+    finished_at = models.BigIntegerField(null=True, blank=True)
 
     # 并行执行相关字段
-    parallel_id = models.CharField(max_length=100, blank=True)
-    parallel_start_node_id = models.CharField(max_length=100, blank=True)
-    parent_parallel_id = models.CharField(max_length=100, blank=True)
-    parent_parallel_start_node_id = models.CharField(max_length=100, blank=True)
-    iteration_id = models.CharField(max_length=100, blank=True)
-    loop_id = models.CharField(max_length=100, blank=True)
+    parallel_id = models.CharField(max_length=100, blank=True, null=True)
+    parallel_start_node_id = models.CharField(max_length=100, blank=True, null=True)
+    parent_parallel_id = models.CharField(max_length=100, blank=True, null=True)
+    parent_parallel_start_node_id = models.CharField(max_length=100, blank=True, null=True)
+    iteration_id = models.CharField(max_length=100, blank=True, null=True)
+    loop_id = models.CharField(max_length=100, blank=True, null=True)
 
     class Meta:
         indexes = [
