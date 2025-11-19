@@ -21,10 +21,12 @@ class WechatRobotQuestionSerializer(serializers.ModelSerializer):
             return "当前机器人正在处理中，请稍等"
         elif obj.workflow_runs.all().count() == 0 and _time >= 120:
             obj.finish = True
+            obj.save()
             return "当前机器人没有处理该问题，请稍后再试"
         else:
             if not obj.workflow_runs.all()[0].answer and _time >= 120:
                 obj.finish = True
+                obj.save()
                 return "当前机器人没有处理该问题，请稍后再试"
             elif not obj.workflow_runs.all()[0].answer and _time < 120:
                 return "当前机器人正在处理中，请稍等"
