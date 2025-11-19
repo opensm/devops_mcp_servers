@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from dify_workflow.models import *
+from common.loger import logger
 
 
 class AgentLogSerializer(serializers.ModelSerializer):
@@ -45,6 +46,7 @@ class WorkflowTaskSerializer(serializers.ModelSerializer):
         )
         if data:
             # 再批量新建
+            logger.info(f"开始处理机器人任务 id={dify_task.id},data={data}")
             WorkflowRunData.objects.create(workflow_run=dify_task, event=event, **data)
         return dify_task
 
