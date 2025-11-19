@@ -22,9 +22,7 @@ class WechatRobotQuestionSerializer(serializers.ModelSerializer):
         workflow_runs = obj.workflow_runs.all()
 
         if workflow_runs.count() == 0:
-            if elapsed_seconds < TIMEOUT_SECONDS:
-                return "当前机器人正在处理中，请稍等"
-            else:
+            if elapsed_seconds > TIMEOUT_SECONDS:
                 obj.finish = True
                 obj.save()
                 return "当前机器人没有处理该问题，请稍后再试"
@@ -35,8 +33,6 @@ class WechatRobotQuestionSerializer(serializers.ModelSerializer):
                 obj.finish = True
                 obj.save()
                 return "当前机器人没有处理该问题，请稍后再试"
-            else:
-                return "当前机器人正在处理中，请稍等"
 
         return first_run.answer
 
