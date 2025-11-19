@@ -17,7 +17,7 @@ class WorkflowRunDataSerializer(serializers.ModelSerializer):
 
 
 class WorkflowTaskSerializer(serializers.ModelSerializer):
-    data = WorkflowRunDataSerializer(many=True)
+    data = WorkflowRunDataSerializer()
 
     class Meta:
         model = WorkflowTask
