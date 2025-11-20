@@ -5,6 +5,7 @@ from common.loger import logger
 from devops_mcp_servers import settings
 from dify_workflow.models import WorkflowRunData
 from django.core.exceptions import ImproperlyConfigured
+from datetime import datetime
 
 
 class WechatRobotQuestionDataSerializer(serializers.ModelSerializer):
@@ -31,7 +32,7 @@ class WechatRobotQuestionSerializer(serializers.ModelSerializer):
         latest_data = (
             WorkflowRunData.objects
             .filter(
-                workflow_run__robot_task=obj,          # ← 这里是 obj 不是 self
+                workflow_run__robot_task=obj,  # ← 这里是 obj 不是 self
                 event='node_finished',
                 status='succeeded',
                 outputs__has_key='answer'
@@ -41,7 +42,7 @@ class WechatRobotQuestionSerializer(serializers.ModelSerializer):
             .first()
         )
 
-        if latest_data:                              # ① 有答案
+        if latest_data:  # ① 有答案
             return latest_data.outputs['answer']
 
         # 2. 无答案 → 判断是否超时
@@ -54,7 +55,7 @@ class WechatRobotQuestionSerializer(serializers.ModelSerializer):
             return '当前机器人没有处理该问题，请稍后再试'
 
         # 4. 未超时
-        return '请等待，大模型正在思考中...'
+        return '请等待，大模型正在思考中 {}'.format(datetime.now().second % 60 * ".")
 
     def to_internal_value(self, data):
         logger.debug(f"数据: {data}")
