@@ -100,6 +100,7 @@ class DifyChatClient:
                         logger.error(f"当前任务:${task_key} 获取到的dify任务数据为空，跳过！")
                         continue
                     data["robot_task"] = instance.pk
+                    logger.info(f"当前任务:id {instance.pk}")
                     logger.info(f"当前任务:${task_key} 获取到的dify任务数据为：\n {data}")
                     serializer = WorkflowTaskSerializer(data=data, many=False)
                     serializer.is_valid(raise_exception=True)
