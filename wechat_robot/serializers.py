@@ -19,23 +19,22 @@ class WechatRobotQuestionSerializer(serializers.ModelSerializer):
         logger.debug(f"{obj.id} 数据时间差为：{elapsed_seconds}, 数据为：{obj.workflow_runs}")
 
         TIMEOUT_SECONDS = 120
-        workflow_runs = obj.workflow_runs.all()
+        workflow_runs = obj.workflow_runs
 
-        if workflow_runs.count() == 0:
+        if workflow_runs is not None:
             if elapsed_seconds > TIMEOUT_SECONDS:
                 obj.finish = True
                 obj.save()
                 return "当前机器人没有处理该问题，请稍后再试"
-            return  ""
+            return ""
 
-        first_run = workflow_runs[0]
-        if not first_run.answer:
+        if not workflow_runs.answer:
             if elapsed_seconds >= TIMEOUT_SECONDS:
                 obj.finish = True
                 obj.save()
                 return "当前机器人没有处理该问题，请稍后再试"
 
-        return first_run.answer
+        return obj.workflow_runs.answer
 
     def to_internal_value(self, data):
         logger.debug(f"数据: {data}")
