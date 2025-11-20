@@ -2,6 +2,7 @@ from rest_framework import serializers
 from wechat_robot.models import *
 from django.utils import timezone
 from common.loger import logger
+from devops_mcp_servers.settings import ANSWER_TIMEOUT
 
 
 class WechatRobotQuestionDataSerializer(serializers.ModelSerializer):
@@ -13,28 +14,39 @@ class WechatRobotQuestionDataSerializer(serializers.ModelSerializer):
 class WechatRobotQuestionSerializer(serializers.ModelSerializer):
     content = serializers.SerializerMethodField()
 
-    def get_content(self, obj: WechatRobotQuestion):
-        logger.debug(f"类型数据为：{obj}")
-        elapsed_seconds = (timezone.now() - obj.create_time).total_seconds()
-        logger.debug(f"{obj.id} 数据时间差为：{elapsed_seconds}, 数据为：{obj.workflow_runs}")
+    def get_content(self, obj: WechatRobotQuestion) -> str:
+        """
+        返回机器人最新答案；若超时且仍无答案则标记结束并返回提示语。
+        整条链路仅 1~2 条 SQL，无 N+1。
+        """
+        # 1. 一次性取出含 answer 的最新节点数据（按 WorkflowRunData.index 降序）
+        latest_data = (
+            WorkflowRunData.objects
+            .filter(
+                workflow_run__robot_task=self,
+                event='node_finished',
+                status='succeeded',
+                outputs__has_key='answer'
+            )
+            .order_by('-index')  # 同一个 run 内 index 越大越新
+            .only('outputs')  # 只取需要的字段
+            .first()
+        )
 
-        TIMEOUT_SECONDS = 120
-        workflow_runs = obj.workflow_runs
+        if latest_data:  # ① 有答案 → 直接返回
+            return latest_data.outputs['answer']
 
-        if workflow_runs is not None:
-            if elapsed_seconds > TIMEOUT_SECONDS:
-                obj.finish = True
-                obj.save()
-                return "当前机器人没有处理该问题，请稍后再试"
-            return ""
+        # 2. 无答案 → 判断是否超时
+        elapsed = (timezone.now() - obj.create_time).total_seconds()
+        if elapsed > ANSWER_TIMEOUT:
+            # 3. 超时仍未拿到答案 → 原子性关闭任务
+            WechatRobotQuestion.objects.filter(pk=obj.pk, finish=False).update(
+                finish=True, status='failed'
+            )
+            return '当前机器人没有处理该问题，请稍后再试'
 
-        if not workflow_runs.answer:
-            if elapsed_seconds >= TIMEOUT_SECONDS:
-                obj.finish = True
-                obj.save()
-                return "当前机器人没有处理该问题，请稍后再试"
-
-        return obj.workflow_runs.answer
+        # 4. 未超时，继续等待
+        return '请等待，大模型正在思考中...'
 
     def to_internal_value(self, data):
         logger.debug(f"数据: {data}")

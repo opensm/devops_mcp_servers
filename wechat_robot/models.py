@@ -1,5 +1,5 @@
-from django.contrib.gis.geometry import json_regex
 from django.db import models
+from dify_workflow.models import WorkflowRunData
 
 
 class WechatRobotQuestionBase(models.Model):
