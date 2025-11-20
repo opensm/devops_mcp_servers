@@ -27,6 +27,7 @@ class WorkflowTaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = WorkflowTask
         fields = '__all__'
+        extra_kwargs = {'robot_task': {'validators': []}}
 
     def create(self, validated_data):
         """
