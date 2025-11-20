@@ -3,6 +3,7 @@ from wechat_robot.models import *
 from django.utils import timezone
 from common.loger import logger
 from devops_mcp_servers.settings import ANSWER_TIMEOUT
+from dify_workflow.models import WorkflowRunData
 
 
 class WechatRobotQuestionDataSerializer(serializers.ModelSerializer):
