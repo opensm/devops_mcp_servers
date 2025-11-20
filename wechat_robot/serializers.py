@@ -41,6 +41,7 @@ class WechatRobotQuestionSerializer(serializers.ModelSerializer):
             .only('outputs')
             .first()
         )
+        logger.info(f"最新数据c: {latest_data}")
 
         if latest_data:  # ① 有答案
             return latest_data.outputs['answer']
