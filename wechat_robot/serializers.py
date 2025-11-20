@@ -33,7 +33,6 @@ class WechatRobotQuestionSerializer(serializers.ModelSerializer):
             WorkflowRunData.objects
             .filter(
                 workflow_run__robot_task=obj,  # ← 这里是 obj 不是 self
-                event='node_finished',
                 status='succeeded',
                 outputs__has_key='answer'
             )
