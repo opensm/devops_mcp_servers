@@ -43,6 +43,9 @@ class WechatRobotQuestionSerializer(serializers.ModelSerializer):
         logger.info(f"最新数据c: {latest_data}")
 
         if latest_data:  # ① 有答案
+            if latest_data.event == 'workflow_finished':
+                obj.finish = True
+                obj.save()
             return latest_data.outputs['answer']
 
         # 2. 无答案 → 判断是否超时
@@ -52,6 +55,8 @@ class WechatRobotQuestionSerializer(serializers.ModelSerializer):
             WechatRobotQuestion.objects.filter(pk=obj.pk, finish=False).update(
                 finish=True, status='failed'
             )
+            obj.finish = True
+            obj.save()
             return '当前机器人没有处理该问题，请稍后再试'
 
         # 4. 未超时
