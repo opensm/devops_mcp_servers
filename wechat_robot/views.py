@@ -3,7 +3,7 @@ from wechat_robot.models import WechatRobotQuestionData, WechatRobotQuestion
 from wechat_robot.serializers import WechatRobotQuestionDataSerializer, WechatRobotQuestionSerializer
 from common.req_libs.parsers import EncryptedDataParser
 from common.req_libs.renderers import EncryptedResponseRenderer
-from rest_framework.response import Response
+from django.http import HttpResponse
 
 
 class WechatRobotQuestionDataView(ListCreateAPIView):
@@ -21,4 +21,4 @@ class WechatRobotQuestionView(ListCreateAPIView):
 
 
 def health_check(request, *args, **kwargs):
-    return Response(data={"status": "ok"}, status=200)
+    return HttpResponse(content="OK", status=200)
