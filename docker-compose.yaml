@@ -4,7 +4,8 @@ services:
   dify:
     image: harbor.newtsp.newcowin.com/rd-tools/ray:55
     container_name: dify
-    shm_size: 48gb
+    ports:
+      - '8000:8000'
     networks:
       - dify-net
     volumes:
