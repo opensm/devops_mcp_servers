@@ -17,49 +17,42 @@ class WechatRobotQuestionDataSerializer(serializers.ModelSerializer):
 class WechatRobotQuestionSerializer(serializers.ModelSerializer):
     content = serializers.SerializerMethodField()
 
+    # ------------------- 只改这一坨 -------------------
     def get_content(self, obj: WechatRobotQuestion) -> str:
-        """
-        返回机器人最新答案；若超时且仍无答案则标记结束并返回提示语。
-        整条链路仅 1~2 条 SQL，无 N+1。
-        """
-        # 0. 取超时阈值
-        try:
-            timeout = int(getattr(settings, 'WECHAT_BOT_ANSWER_TIMEOUT', 120))
-        except (TypeError, ValueError):
-            raise ImproperlyConfigured('WECHAT_BOT_ANSWER_TIMEOUT 必须为正整数')
+        timeout = int(getattr(settings, 'WECHAT_BOT_ANSWER_TIMEOUT', 120))
 
-        # 1. 一次性取出含 answer 的最新节点数据
+        # 1. 取最新含 answer 的节点
         latest_data = (
             WorkflowRunData.objects
             .filter(
-                workflow_run__robot_task=obj,  # ← 这里是 obj 不是 self
+                workflow_run__robot_task=obj,
                 status='succeeded',
                 outputs__has_key='answer'
             )
             .order_by('-index')
-            .only('outputs')
+            .only('outputs', 'event')
             .first()
         )
-        logger.info(f"最新数据c: {latest_data}")
 
         if latest_data:  # ① 有答案
-            if latest_data.event == 'workflow_finished':
-                obj.finish = True
-                obj.save()
+            # 原子性关单（只写一次，并发安全）
+            WechatRobotQuestion.objects.filter(
+                pk=obj.pk, finish=False
+            ).update(finish=True, status='finished')
+            # 内存对象也同步，免得后面再用 serializer 时状态不对
+            obj.finish, obj.status = True, 'finished'
             return latest_data.outputs['answer']
 
-        # 2. 无答案 → 判断是否超时
+        # 2. 无答案 → 超时关单
         elapsed = (timezone.now() - obj.create_time).total_seconds()
         if elapsed > timeout:
-            # 3. 超时关单（原子性）
-            WechatRobotQuestion.objects.filter(pk=obj.pk, finish=False).update(
-                finish=True, status='failed'
-            )
-            obj.finish = True
-            obj.save()
+            WechatRobotQuestion.objects.filter(
+                pk=obj.pk, finish=False
+            ).update(finish=True, status='failed')
+            obj.finish, obj.status = True, 'failed'
             return '当前机器人没有处理该问题，请稍后再试'
 
-        # 4. 未超时
+        # 3. 未超时
         return '请等待，大模型正在思考中 {}'.format(datetime.now().second % 60 * ".")
 
     def to_internal_value(self, data):
