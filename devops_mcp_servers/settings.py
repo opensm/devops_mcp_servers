@@ -129,4 +129,4 @@ WECHAT_CORP_ID_OR_APP_ID = os.environ.get('WECHAT_CORP_ID_OR_APP_ID', None)
 # DIfy 配置
 DIFY_API_KEY = os.environ.get('DIFY_API_KEY', None)
 DIFY_API_URL = os.environ.get('DIFY_API_URL', None)
-ANSWER_TIMEOUT = 600
+ANSWER_TIMEOUT = os.environ.get('ANSWER_TIMEOUT', 600)
