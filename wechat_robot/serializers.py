@@ -36,11 +36,16 @@ class WechatRobotQuestionSerializer(serializers.ModelSerializer):
 
         if latest_data:  # ① 有答案
             # 原子性关单（只写一次，并发安全）
-            WechatRobotQuestion.objects.filter(
-                pk=obj.pk, finish=False
-            ).update(finish=True, status='finished')
-            # 内存对象也同步，免得后面再用 serializer 时状态不对
-            obj.finish, obj.status = True, 'finished'
+            if latest_data.event == 'workflow_finished':
+                WechatRobotQuestion.objects.filter(
+                    pk=obj.pk, finish=False
+                ).update(finish=True, status='finished')
+                # 内存对象也同步，免得后面再用 serializer 时状态不对
+                obj.finish, obj.status = True, 'finished'
+                obj.save()
+                logger.info(f"机器人已处理该问题，答案为: {latest_data.outputs['answer']}")
+            else:
+                logger.info(f"机器人处理问题中，答案为: {latest_data.outputs['answer']}")
             return latest_data.outputs['answer']
 
         # 2. 无答案 → 超时关单
@@ -50,6 +55,7 @@ class WechatRobotQuestionSerializer(serializers.ModelSerializer):
                 pk=obj.pk, finish=False
             ).update(finish=True, status='failed')
             obj.finish, obj.status = True, 'failed'
+            obj.save()
             return '当前机器人没有处理该问题，请稍后再试'
 
         # 3. 未超时
