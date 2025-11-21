@@ -3,6 +3,7 @@ from wechat_robot.models import WechatRobotQuestionData, WechatRobotQuestion
 from wechat_robot.serializers import WechatRobotQuestionDataSerializer, WechatRobotQuestionSerializer
 from common.req_libs.parsers import EncryptedDataParser
 from common.req_libs.renderers import EncryptedResponseRenderer
+from rest_framework.response import Response
 
 
 class WechatRobotQuestionDataView(ListCreateAPIView):
@@ -17,3 +18,7 @@ class WechatRobotQuestionView(ListCreateAPIView):
     serializer_class = WechatRobotQuestionSerializer
     parser_classes = [EncryptedDataParser]
     renderer_classes = [EncryptedResponseRenderer]
+
+
+def health_check(request, *args, **kwargs):
+    return Response(data={"status": "ok"}, status=200)
