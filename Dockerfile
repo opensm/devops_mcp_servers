@@ -5,9 +5,23 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     DJANGO_SETTINGS_MODULE=devops_mcp_servers.settings
 WORKDIR /app
 
-RUN sed -i 's@deb.debian.org@mirrors.aliyun.com@g; s@security.debian.org@mirrors.aliyun.com@g' /etc/apt/sources.list && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* \
+RUN <<EOF
+cat > /etc/apt/sources.list.d/debian.sources <<'DEB'
+Types: deb
+URIs: https://mirrors.aliyun.com/debian
+Suites: bookworm bookworm-updates bookworm-backports
+Components: main contrib non-free
+Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
+
+Types: deb
+URIs: https://mirrors.aliyun.com/debian-security
+Suites: bookworm-security
+Components: main contrib non-free
+Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
+DEB
+EOF
+
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
