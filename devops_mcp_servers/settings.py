@@ -71,11 +71,23 @@ WSGI_APPLICATION = 'devops_mcp_servers.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
+SQLITE_PATH = os.environ.get(
+    'SQLITE_PATH',
+    os.path.join(BASE_DIR, 'data', 'db.sqlite3')
+)
+# 如果目录不存在就自动创建，避免首次启动报错
+SQLITE_DIR = os.path.dirname(SQLITE_PATH)
+if not os.path.exists(SQLITE_DIR):
+    os.makedirs(SQLITE_DIR, mode=0o755, exist_ok=True)
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'data' / 'db.sqlite3',
+        'NAME': SQLITE_PATH,
+        # 以下参数可选，提升并发一丢丢
+        'OPTIONS': {
+            'timeout': 20,
+        }
     }
 }
 

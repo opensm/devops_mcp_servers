@@ -3,3 +3,4 @@ djangorestframework
 pycryptodome
 django-apscheduler
 dify-client
+gunicorn
