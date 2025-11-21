@@ -1,17 +1,12 @@
 version: '3.8'
 
 services:
-  ray-head:
+  dify:
     image: harbor.newtsp.newcowin.com/rd-tools/ray:55
-    container_name: ray-head
+    container_name: dify
     shm_size: 48gb
     networks:
-      - ray-net
-    command: >
-      /bin/bash -c "
-        sleep 10 &&
-        ray start --address=ray-head:6379  --block
-      "
+      - dify-net
     volumes:
       - /DATA/01/ray:/data
     environment:
@@ -22,5 +17,7 @@ services:
       - LOGLEVEL=ERROR
 
 networks:
-  ray-net:
-    external: true
+  dify-net:
+    ipam:
+      config:
+        - subnet: "10.198.255.0/24"
