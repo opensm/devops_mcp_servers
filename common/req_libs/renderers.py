@@ -10,16 +10,17 @@ class FormattedResponseRenderer:
     """
     自定义渲染器，用于格式化响应数据
     """
-    encode_object = MsgCryptHelper(
-        sToken=settings.WECHAT_TOKEN,
-        sEncodingAESKey=settings.WECHAT_ENCODING_AES_KEY,
-        sReceiveId=""
-    )
+    encode_object = None
 
     def format_wechat_response(self, data, receiveid, nonce, timestamp, **kwargs):
         """
         :params data
         """
+        self.encode_object = MsgCryptHelper(
+            sToken=settings.WECHAT_TOKEN,
+            sEncodingAESKey=settings.WECHAT_ENCODING_AES_KEY,
+            sReceiveId=""
+        )
         if isinstance(data, dict):
             # 获取响应数据中的msgid
             stream_id = data.get('stream')
