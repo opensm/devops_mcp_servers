@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  ray-head:
+    image: harbor.newtsp.newcowin.com/rd-tools/ray:55
+    container_name: ray-head
+    shm_size: 48gb
+    networks:
+      - ray-net
+    command: >
+      /bin/bash -c "
+        sleep 10 &&
+        ray start --address=ray-head:6379  --block
+      "
+    volumes:
+      - /DATA/01/ray:/data
+    environment:
+      - DIFY_API_URL=https://dify.kyoffice.cn/v1
+      - DIFY_API_KEY=app-o7WVQztApWppQIqR7exy6OBH
+      - WECHAT_ENCODING_AES_KEY=ATscRrSg8CyetlwIaB5pH7dIDkRcrOtC4lBUurTLsvU
+      - WECHAT_TOKEN=KVtdT5ugqxBi3
+      - LOGLEVEL=ERROR
+
+networks:
+  ray-net:
+    external: true
