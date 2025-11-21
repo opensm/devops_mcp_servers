@@ -5,7 +5,9 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     DJANGO_SETTINGS_MODULE=devops_mcp_servers.settings
 WORKDIR /app
 
-RUN apt-get update && rm -rf /var/lib/apt/lists/*
+RUN sed -i 's@deb.debian.org@mirrors.aliyun.com@g; s@security.debian.org@mirrors.aliyun.com@g' /etc/apt/sources.list && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* \
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
