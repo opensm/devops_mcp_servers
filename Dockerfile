@@ -28,6 +28,8 @@ RUN pip install --no-cache-dir -r requirements.txt -i https://mirrors.aliyun.com
 
 COPY . .
 
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 # ===== 新增：构建时生成迁移文件 =====
 RUN python manage.py makemigrations
 
@@ -37,6 +39,5 @@ RUN chown -R app:app /app
 USER app
 
 EXPOSE 8000
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+
 ENTRYPOINT ["/entrypoint.sh"]
