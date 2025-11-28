@@ -10,17 +10,13 @@ class FormattedResponseRenderer:
     """
     自定义渲染器，用于格式化响应数据
     """
-    encode_object = None
+
 
     def format_wechat_response(self, data, receiveid, nonce, timestamp, **kwargs):
         """
         :params data
         """
-        self.encode_object = MsgCryptHelper(
-            sToken=settings.WECHAT_TOKEN,
-            sEncodingAESKey=settings.WECHAT_ENCODING_AES_KEY,
-            sReceiveId=""
-        )
+
         if isinstance(data, dict):
             # 获取响应数据中的msgid
             stream_id = data.get('stream')
@@ -78,6 +74,7 @@ class EncryptedResponseRenderer(renderers.BaseRenderer, FormattedResponseRendere
     format = 'txt'  # 可选：?format=txt 也可触发
     charset = 'utf-8'
     _error_message = "系统错误，请联系管理员"
+    encode_object = None
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         # 获取请求和响应对象
@@ -88,6 +85,11 @@ class EncryptedResponseRenderer(renderers.BaseRenderer, FormattedResponseRendere
         nonce = request.query_params.get('nonce')
         timestamp = request.query_params.get('timestamp')
         logger.debug(f"请求参数: {nonce}, {timestamp}")
+        self.encode_object = MsgCryptHelper(
+            sToken=settings.WECHAT_TOKEN,
+            sEncodingAESKey=settings.WECHAT_ENCODING_AES_KEY,
+            sReceiveId=""
+        )
 
         # 获取receiveid，可以从URL参数、请求头或设置中获取
         # 这里假设receiveid在URL参数中，如果没有则使用默认值

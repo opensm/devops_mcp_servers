@@ -1,130 +1,145 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-企业微信 AI 机器人模拟器
-用于本地测试 demo_server.py
+企业微信机器人回调模拟器
+与Django视图（@csrf_exempt + request.body）配套测试
 """
-
-import base64
-import json
-import time
-import random
-import hashlib
-import requests
-import os
-from urllib.parse import urlencode
-
-# 与 demo_server 使用完全相同的加密库
+import base64, json, time, random, hashlib, requests, os
 from common.req_libs.WXBizJsonMsgCrypt import WXBizJsonMsgCrypt
+import random
+import string
 
-# ========= 配置区 =========
+# ================= 配置 =================
 HOST = os.getenv("HOST", "127.0.0.1")
 PORT = int(os.getenv("PORT", 8000))
-BOTID = os.getenv("BOTID", "")
-TOKEN = os.getenv("TOKEN", "")
-ENCODING_AES_KEY = os.getenv("ENCODING_AES_KEY", "")
+BOTID = os.getenv("BOTID", "1111")
+TOKEN = os.getenv("WECHAT_TOKEN", "")
+ENCODING_AES_KEY = os.getenv("WECHAT_ENCODING_AES_KEY", "")
+assert TOKEN and ENCODING_AES_KEY, "请先设置 WECHAT_TOKEN 和 WECHAT_ENCODING_AES_KEY"
+HOST = f"http://{HOST}:{PORT}"
+RECVID = ""  # 机器人receiveid为空
 
-# ===========================
+# ============= 新增日志 ============
+import logging
 
-VERIFY_URL = f"{HOST}:{PORT}/ai-bot/callback/demo/{BOTID}"
-RECV_ID = ""  # 企业微信机器人 receiveid 为空串
+LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
+logging.basicConfig(
+    level=getattr(logging, LOG_LEVEL, logging.INFO),
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 
-def gen_params():
-    """生成时间戳、随机串"""
-    return str(int(time.time())), str(random.randint(100000, 999999))
+# ====================================
+
+def gen_ts_nonce():
+    ts, nonce = str(int(time.time())), str(random.randint(100000, 999999))
+    logger.debug("gen_ts_nonce: ts=%s, nonce=%s", ts, nonce)
+    return ts, nonce
 
 
-def calc_signature(token, ts, nonce, encrypt):
-    """手工计算签名，用于验证 URL"""
+def calc_sig(token, ts, nonce, encrypt):
     arr = [token, ts, nonce, encrypt]
     arr.sort()
-    s = "".join(arr)
-    return hashlib.sha1(s.encode()).hexdigest()
+    sig = hashlib.sha1("".join(arr).encode()).hexdigest()
+    logger.debug("calc_sig: input=%s, sig=%s", arr, sig)
+    return sig
 
 
-def verify_url():
-    """Step1: 模拟企业微信的验证 URL GET 请求"""
-    ts, nonce = gen_params()
-    echo = base64.b64encode(b"hello").decode()  # 任意 base64
-    sig = calc_signature(TOKEN, ts, nonce, echo)
-
-    params = {"msg_signature": sig, "timestamp": ts, "nonce": nonce, "echostr": echo}
-    resp = requests.get(VERIFY_URL, params=params)
-    print("[verify] status:", resp.status_code, "echo:", resp.text)
-
-
-def encrypt_msg(msg_json: str):
-    """用官方库加密一条明文 json"""
-    wxcpt = WXBizJsonMsgCrypt(TOKEN, ENCODING_AES_KEY, RECV_ID)
-    ts, nonce = gen_params()
-    ret, cipher = wxcpt.EncryptMsg(msg_json, nonce, ts)
+def encrypt_msg(plain_json: str):
+    ts, nonce = gen_ts_nonce()
+    wxcpt = WXBizJsonMsgCrypt(TOKEN, ENCODING_AES_KEY, RECVID)
+    ret, cipher = wxcpt.EncryptMsg(plain_json, nonce, ts)
     assert ret == 0, "加密失败"
+    logger.debug("encrypt_msg: plain=%s, cipher=%s", plain_json, cipher)
     return cipher, ts, nonce
 
 
-def decrypt_msg(cipher_json: str):
-    """解密服务器回包"""
-    wxcpt = WXBizJsonMsgCrypt(TOKEN, ENCODING_AES_KEY, RECV_ID)
-    d = json.loads(cipher_json)
-    ret, plain = wxcpt.DecryptMsg(cipher_json, d["msgsignature"], d["timestamp"], d["nonce"])
-    assert ret == 0, "解密失败"
+def decrypt_msg(cipher_text: str):
+    d = json.loads(cipher_text)
+    wxcpt = WXBizJsonMsgCrypt(TOKEN, ENCODING_AES_KEY, RECVID)
+    ret, plain = wxcpt.DecryptMsg(cipher_text, d["msgsignature"], d["timestamp"], d["nonce"])
+    assert ret == 0, f"解密失败 ret={ret}"
+    logger.debug("decrypt_msg: cipher=%s, plain=%s", cipher_text, plain)
     return json.loads(plain)
 
 
+def post_plain(cipher_text: str):
+    url = f"{HOST}/ai-bot/callback/demo/{BOTID}"
+    ts, nonce = gen_ts_nonce()
+    sig = calc_sig(TOKEN, ts, nonce, json.loads(cipher_text)["encrypt"])
+    params = {"msg_signature": sig, "timestamp": ts, "nonce": nonce}
+    headers = {
+        "Content-Type": "application/json",
+        "User-Agent": "Mozilla/4.0"
+    }
+    logger.debug("post_plain: url=%s, params=%s, headers=%s, body=%s",
+                 url, params, headers, cipher_text)
+    r = requests.post(url, params=params, data=cipher_text, headers=headers)
+    logger.debug("post_plain: status=%s, response=%s", r.status_code, r.text)
+    return r
+
+
+def generate_hex_string(length=32):
+    return ''.join(random.choices(string.hexdigits.lower(), k=length))
+
+
+# def send_text(content: str):
+#     plain = {"msgtype": "text", "text": {"content": content}}
+#     cipher, _, _ = encrypt_msg(json.dumps(plain, ensure_ascii=False))
+#     resp = post_plain(cipher)
+#     return decrypt_msg(resp.text)
+
 def send_text(content: str):
     """模拟用户发送文本消息"""
-    plain = {"msgtype": "text", "text": {"content": content}}
+    url = f"{HOST}/ai-bot/callback/demo/{BOTID}"
+    msg_id = generate_hex_string()
+    robot_id = "aibrGalbJc-O4nrQRGAGLjNTIk8P"
+    chat_id = "wrck4BDQAAWHKnqDvlif4Mp9tYXHMuuQ"
+    chat_type = "single"
+    chat_from = {'userid': 'ky005509'}
+    plain = {
+        'msgid': msg_id, 'aibotid': robot_id,
+        'chattype': 'single', 'from': {'userid': 'ky005509'}, 'msgtype': 'text',
+        'text': {'content': content}
+    }
     cipher, ts, nonce = encrypt_msg(json.dumps(plain, ensure_ascii=False))
-    sig = calc_signature(TOKEN, ts, nonce, json.loads(cipher)["encrypt"])
+    sig = calc_sig(TOKEN, ts, nonce, json.loads(cipher)["encrypt"])
 
     params = {"msg_signature": sig, "timestamp": ts, "nonce": nonce}
-    resp = requests.post(VERIFY_URL, params=params, data=cipher.encode())
-    return decrypt_msg(resp.text)
+    headers = {
+        "Content-Type": "application/json",
+        "User-Agent": "Mozilla/4.0"
+    }
+    resp = requests.post(url, params=params, data=cipher.encode(), headers=headers)
+    return decrypt_msg(resp.text), msg_id
 
 
-def pull_stream(stream_id: str):
-    """持续拉取流式回答"""
+def pull_stream(stream_id: str, msg_id):
     while True:
-        plain = {"msgtype": "stream", "stream": {"id": stream_id}}
-        cipher, ts, nonce = encrypt_msg(json.dumps(plain, ensure_ascii=False))
-        sig = calc_signature(TOKEN, ts, nonce, json.loads(cipher)["encrypt"])
-
-        params = {"msg_signature": sig, "timestamp": ts, "nonce": nonce}
-        resp = requests.post(VERIFY_URL, params=params, data=cipher.encode())
+        msg_id = generate_hex_string()
+        plain = {
+            "msgid": msg_id,
+            "chattype": "single",
+            "from": {"userid": "ky005509"},
+            "msgtype": "stream",
+            "stream": {"id": stream_id},
+            "chatid": "wrck4BDQAAWHKnqDvlif4Mp9tYXHMuuQ",
+            "aibotid": "aibrGalbJc-O4nrQRGAGLjNTIk8P"
+        }
+        cipher, _, _ = encrypt_msg(json.dumps(plain, ensure_ascii=False))
+        resp = post_plain(cipher)
         back = decrypt_msg(resp.text)
-
-        print("[stream] content:", back["stream"]["content"])
+        logger.info("[STREAM] %s", back["stream"]["content"])
         if back["stream"]["finish"]:
             break
         time.sleep(1)
 
 
-def send_image(img_path: str):
-    """模拟用户上传加密图片（这里偷懒，直接传 base64 假装已加密）"""
-    with open(img_path, "rb") as f:
-        fake_cipher = base64.b64encode(f.read()).decode()
-    plain = {"msgtype": "image", "image": {"url": "data:image/jpeg;base64," + fake_cipher}}
-    cipher, ts, nonce = encrypt_msg(json.dumps(plain, ensure_ascii=False))
-    sig = calc_signature(TOKEN, ts, nonce, json.loads(cipher)["encrypt"])
-
-    params = {"msg_signature": sig, "timestamp": ts, "nonce": nonce}
-    resp = requests.post(VERIFY_URL, params=params, data=cipher.encode())
-    back = decrypt_msg(resp.text)
-    print("[image] server returned an image, len=", len(back["stream"]["msg_item"][0]["image"]["base64"]))
-
-
 def main():
-    verify_url()
-
-    print("\n====== 文本对话测试 ======")
-    ret = send_text("今天深圳天气如何？")
-    stream_id = ret["stream"]["id"]
-    pull_stream(stream_id)
-
-    print("\n====== 图片回显测试 ======")
-    # 任意找一张小图即可
-    send_image("test.jpg")
+    logger.info("=== 文本对话 ===")
+    back, msg_id = send_text("今天深圳天气？")
+    pull_stream(back["stream"]["id"], msg_id)
 
 
 if __name__ == "__main__":

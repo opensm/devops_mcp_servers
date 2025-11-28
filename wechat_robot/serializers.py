@@ -73,10 +73,11 @@ class WechatRobotQuestionSerializer(serializers.ModelSerializer):
             data.update({
                 "text": text['content']
             })
-        chat_from = data.pop("from")
+        chat_from = data.pop("from", "")
+        if chat_from:
+            chat_from = chat_from.get('userid', "")
         data.update({
-            "chat_from": chat_from['userid'],
-
+            "chat_from": chat_from,
         })
         return super().to_internal_value(data)
 

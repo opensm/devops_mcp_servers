@@ -33,9 +33,9 @@ class WorkflowTaskSerializer(serializers.ModelSerializer):
         """
         整个 JSON 里只有 Category + 它的 products。
         用 update_or_create 处理 Category，
-        然后同步 products（先删后插）。
         """
         logger.info(f"开始处理机器人任务 data={validated_data}")
+        # 处理外部参数
         data = validated_data.pop('data', None)
         conversation_id = validated_data.pop('conversation_id')
         message_id = validated_data.pop('message_id')
@@ -59,6 +59,14 @@ class WorkflowTaskSerializer(serializers.ModelSerializer):
             data['workflow_run'] = dify_task
             # 再批量新建
             WorkflowRunData.objects.create(event=event, **data)
+            robot_task.status = data.get('status', 'running')
+            robot_task.save()
+            if data.get('status', 'running') == 'failed':
+                robot_task.finish = True
+                robot_task.save()
+            if event == 'message_end':
+                robot_task.finish = True
+                robot_task.save()
             logger.info(f"处理机器人任务 id={dify_task.id}完成")
         return dify_task
 
