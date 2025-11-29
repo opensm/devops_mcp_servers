@@ -9,14 +9,14 @@ class WorkflowTask(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     robot_task = models.OneToOneField(
         WechatRobotQuestion,
-        verbose_name="机器人ID", on_delete=models.CASCADE, related_name='workflow_runs', null=True
+        verbose_name="机器人ID", on_delete=models.CASCADE, related_name='workflow_runs', null=True, blank=True
     )
-    conversation_id = models.UUIDField(verbose_name="运行ID")
-    message_id = models.UUIDField(verbose_name="消息ID")
-    task_id = models.UUIDField(verbose_name="任务ID")
+    conversation_id = models.UUIDField(verbose_name="运行ID", null=False, blank=False)
+    message_id = models.UUIDField(verbose_name="消息ID", null=False, blank=False)
+    task_id = models.UUIDField(verbose_name="任务ID", null=False, blank=False)
     workflow_run_id = models.UUIDField(verbose_name="工作流运行ID", null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name="创建时间")
-    updated_at = models.DateTimeField(auto_now=True, verbose_name="更新时间")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="创建时间", null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="更新时间", null=True, blank=True)
     answer = models.TextField(verbose_name="答案", null=True, blank=True)
 
     class Meta:
@@ -31,7 +31,7 @@ class WorkflowTask(models.Model):
 class WorkflowRunData(models.Model):
     """存储节点执行信息"""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    workflow_run = models.ForeignKey(WorkflowTask, on_delete=models.CASCADE, related_name='data')
+    workflow_run = models.ForeignKey(WorkflowTask, on_delete=models.CASCADE, related_name='data', null=True, blank=True)
     event = models.CharField(max_length=100, verbose_name="事件", default="workflow_started")
     node_id = models.CharField(max_length=100, blank=True, null=True)
     node_type = models.CharField(max_length=50, blank=True, null=True)

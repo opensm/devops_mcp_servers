@@ -35,7 +35,7 @@ def crontab_run_dify_job():
     logger.debug('=== 新一轮调度开始 ===')
     # 1. 先快速捞一批 pending（不锁行）
     candidates = list(WechatRobotQuestion.objects.filter(
-        status='pending',
+        finish=False,
         create_time__gt=(timezone.now() - timedelta(seconds=120))
     )[:5])
     if not candidates:

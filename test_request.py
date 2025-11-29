@@ -138,7 +138,7 @@ def pull_stream(stream_id: str, msg_id):
 
 def main():
     logger.info("=== 文本对话 ===")
-    back, msg_id = send_text("今天深圳天气？")
+    back, msg_id = send_text("你好，你是谁，你能做什么？")
     pull_stream(back["stream"]["id"], msg_id)
 
 

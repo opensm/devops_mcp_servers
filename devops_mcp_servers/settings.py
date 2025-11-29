@@ -87,7 +87,11 @@ DATABASES = {
         # 以下参数可选，提升并发一丢丢
         'OPTIONS': {
             'timeout': 20,
-        }
+            'check_same_thread': False
+        },
+        # # 强制单连接，减少锁竞争
+        # 'CONN_MAX_AGE': 0,
+        # 'CONN_HEALTH_CHECKS': False
     }
 }
 

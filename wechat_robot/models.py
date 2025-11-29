@@ -7,7 +7,7 @@ class WechatRobotQuestionBase(models.Model):
     chatid = models.CharField(max_length=36, verbose_name="聊天id", default="", null=False)
     chattype = models.CharField(max_length=36, choices=(("group", "群"), ("single", "个人")), default="group",
                                 null=False)
-    chat_from = models.JSONField(default=dict(), null=False, blank=False, db_column="from")
+    chat_from = models.JSONField(default=dict, null=False, blank=False, db_column="from")
     msgtype = models.CharField(
         max_length=36, choices=(("text", "文字"), ("stream", "数据流")), default="text", null=False
     )
@@ -24,7 +24,7 @@ class WechatRobotQuestionBase(models.Model):
 
 class WechatRobotQuestion(WechatRobotQuestionBase):
     import uuid
-    text = models.JSONField(default="", null=False, blank=False)
+    text = models.JSONField(default=dict, null=False, blank=False)
     stream = models.UUIDField(null=False, blank=False, default=uuid.uuid4, unique=True)
     finish = models.BooleanField(default=False, null=False)
     status = models.CharField(
@@ -33,6 +33,7 @@ class WechatRobotQuestion(WechatRobotQuestionBase):
         default="pending",
         null=False
     )
+    content = models.TextField(default="", null=True, blank=True)
 
 
 # {'msgid': '2cea1e14656ba7c3810a3c6841e18a68', 'aibotid': 'aibrGalbJc-O4nrQRGAGLjNTIk8PpdhpCje',
@@ -40,4 +41,4 @@ class WechatRobotQuestion(WechatRobotQuestionBase):
 # 'msgtype': 'stream', 'stream': {'id': 'dify::aibrGalbJc-O4nrQRGAGLjNTIk8PpdhpCje:wrck4BDQAAWHKnqDvlif4Mp9tYXHMuuQ:V8hgz9vBFW'
 # }}
 class WechatRobotQuestionData(WechatRobotQuestionBase):
-    stream = models.JSONField(default=dict(), null=False, blank=False)
+    stream = models.JSONField(default=dict, null=False, blank=False)
