@@ -80,7 +80,7 @@ SQLITE_DIR = os.path.dirname(SQLITE_PATH)
 if not os.path.exists(SQLITE_DIR):
     os.makedirs(SQLITE_DIR, mode=0o755, exist_ok=True)
 
-DATABASES = {
+DATABASES = os.getenv("DATABASES",{
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': SQLITE_PATH,
@@ -93,7 +93,7 @@ DATABASES = {
         # 'CONN_MAX_AGE': 0,
         # 'CONN_HEALTH_CHECKS': False
     }
-}
+})
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
