@@ -82,16 +82,12 @@ if not os.path.exists(SQLITE_DIR):
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': SQLITE_PATH,
-        # 以下参数可选，提升并发一丢丢
-        'OPTIONS': {
-            'timeout': 20,
-            'check_same_thread': False
-        },
-        # # 强制单连接，减少锁竞争
-        # 'CONN_MAX_AGE': 0,
-        # 'CONN_HEALTH_CHECKS': False
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': os.environ.get('DB','dify'),
+        'USER': os.environ.get('DB_USER','dify'),
+        'PASSWORD': os.environ.get('DB_PASSWORD','dify'),
+        'HOST': os.environ.get('DB_HOST','127.0.0.1'),
+        'PORT': os.environ.get('DB_PORT',3306),
     }
 }
 

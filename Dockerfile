@@ -29,7 +29,7 @@ RUN pip install --no-cache-dir -r requirements.txt -i https://mirrors.aliyun.com
 COPY . .
 
 COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+RUN chmod +x /entrypoint.sh && mv devops_mcp_servers/settings_prod.py devops_mcp_servers/settings.py
 # ===== 新增：构建时生成迁移文件 =====
 RUN python manage.py makemigrations
 
