@@ -92,7 +92,7 @@ class DifyChatClient:
             return True
 
         # 1. 超时失败
-        timeout = int(getattr(settings, "WECHAT_BOT_ANSWER_TIMEOUT", 120))
+        timeout = int(getattr(settings, "ANSWER_TIMEOUT", 120))
         if (timezone.now() - task.create_time).total_seconds() > timeout:
             # 只写一次，减少锁冲突
             rows = WechatRobotQuestion.objects.filter(
@@ -193,7 +193,7 @@ class DifyChatClient:
             try:
                 # 提取JSON部分
                 if not line.startswith('data:'):
-                    raise DataTypeError("Invalid data format")
+                    raise DataTypeError("非工作流数据")
                 json_data = line[5:].strip()
                 if not json_data:
                     raise DataNOtFound(f"当前任务:${instance.stream} 获取到的dify任务数据为空，跳过！")
