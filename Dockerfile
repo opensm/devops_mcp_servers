@@ -21,7 +21,7 @@ Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
 DEB
 EOF
 
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN apt-get clean && rm -rf /var/lib/apt/lists/* && apt-get update && apt-get install -y libmysqlclient-dev
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple && rm -f requirements.txt
