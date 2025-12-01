@@ -39,7 +39,7 @@ class WorkflowRunData(models.Model):
     index = models.IntegerField(blank=True, null=True)
     predecessor_node_id = models.CharField(max_length=100, blank=True, null=True)
     inputs = models.JSONField(encoder=DjangoJSONEncoder, null=True, blank=True)
-    process_data = models.TextField(blank=True, null=True)
+    process_data = models.JSONField(encoder=DjangoJSONEncoder, null=True, blank=True)
     outputs = models.JSONField(encoder=DjangoJSONEncoder, null=True, blank=True)
     status = models.CharField(max_length=20, default='running', blank=True, null=True)  # running, succeeded, failed
     error = models.TextField(blank=True, null=True)
