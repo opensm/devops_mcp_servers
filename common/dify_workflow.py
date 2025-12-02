@@ -229,7 +229,7 @@ class DifyChatClient:
                 print()
         if not instance.workflow_runs.data.all():
             instance.status = 'failed'
-            instance.stream = ''
+            instance.stream = '大模型调用异常，请稍后再试……'
             instance.finish = True
             instance.save()
 
