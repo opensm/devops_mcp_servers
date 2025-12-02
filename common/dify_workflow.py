@@ -82,6 +82,12 @@ class DifyChatClient:
     # ---------------- 单条任务状态机 ----------------
     def modify_worker_status(self, stream_id: str) -> bool:
         # SQLite 下不再 select_for_update
+        WechatRobotQuestion.objects.filter(stream=stream_id, status="failed").update(
+            finish=True,
+            status="failed",
+            content="机器人处理失败，请稍后再试……"
+        )
+
         try:
             task = WechatRobotQuestion.objects.get(stream=stream_id)
         except WechatRobotQuestion.DoesNotExist:
