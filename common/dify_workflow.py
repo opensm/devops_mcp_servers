@@ -182,8 +182,7 @@ class DifyChatClient:
         # 兜底
         return "大模型正在处理中……"
 
-    @staticmethod
-    def process_stream_response(response, instance: WechatRobotQuestion, **kwargs):
+    def process_stream_response(self, response, instance: WechatRobotQuestion, **kwargs):
         """
         处理流式响应数据
 
@@ -228,7 +227,10 @@ class DifyChatClient:
             finally:
                 print()
 
-    def check_workflow_run(self, instance: WechatRobotQuestion):
+        self.check_workflow_run(instance)
+
+    @staticmethod
+    def check_workflow_run(instance: WechatRobotQuestion):
         if not instance.workflow_runs:
             instance.status = 'failed'
             instance.stream = '大模型调用异常，请稍后再试……'
