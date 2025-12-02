@@ -34,7 +34,6 @@ class WorkflowTaskSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data: dict):
         logger.info(f"开始处理机器人任务 data={validated_data}")
-
         lookup_fields, defaults = self._split_fields(validated_data)
         self._coerce_types(lookup_fields)  # 仅对查询键做类型转换
         task, created = WorkflowTask.objects.update_or_create(
@@ -46,7 +45,19 @@ class WorkflowTaskSerializer(serializers.ModelSerializer):
         self._create_run_data(task, validated_data)
         return task
 
-        # ---------- 辅助方法 ----------
+    # ---------- 辅助方法 ----------
+    @staticmethod
+    def _checkout_message_event(lookup_fields: dict, defaults: dict, event: str):
+
+        try:
+            if event != "message":
+                return lookup_fields, defaults
+            task = WorkflowTask.objects.get(**lookup_fields)
+            if not defaults['answer'] and task.answer:
+                defaults['answer'] = task.answer
+            return lookup_fields, defaults
+        except WorkflowTask.DoesNotExist:
+            return lookup_fields, defaults
 
     def _split_fields(self, validated_data: dict):
         """返回 (用于查询的字段, 用于更新的字段)"""
@@ -56,7 +67,7 @@ class WorkflowTaskSerializer(serializers.ModelSerializer):
             if field.name in validated_data:
                 target = lookup_fields if field.name in lookup_keys else defaults
                 target[field.name] = validated_data[field.name]
-        return lookup_fields, defaults
+        return self._checkout_message_event(lookup_fields, defaults, validated_data.get('event', ''))
 
     def _coerce_types(self, lookup: dict):
         """把字符串 UUID 转成 UUID 对象"""
@@ -72,27 +83,20 @@ class WorkflowTaskSerializer(serializers.ModelSerializer):
             if key not in validated_data:
                 continue
             if key == 'answer':
-                message_data["output"] = {"answer": validated_data.pop(key)}
+                message_data["output"] = {"answer": validated_data[key]}
             else:
                 message_data[key] = validated_data.pop(key)
         return message_data
 
     def _create_run_data(self, task: WorkflowTask, validated_data: dict):
-        # event = validated_data.pop('event', None)
-        # data = validated_data.pop('data', None)
-        # metadata = validated_data.pop('metadata', None)
-
-        # if event == 'message':
-        #     data = {'output': {'answer': getattr(task, 'answer', '')}}
-        # elif event == 'message_end':
-        #     data = {'metadata': metadata}
-        # if data is None:
-        #     return
-        data = self._get_attrs(validated_data)
-        data.update(dict(
-            workflow_run=task.id
-        ))
+        """"""
         try:
+            data = self._get_attrs(validated_data)
+            if data == {}:
+                raise ValueError("数据为空")
+            data.update(dict(
+                workflow_run=task.id
+            ))
             serializer = WorkflowRunDataSerializer(data=data)
             serializer.is_valid(raise_exception=True)
             serializer.save()

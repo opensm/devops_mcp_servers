@@ -153,9 +153,9 @@ class DifyChatClient:
         3. 再没有才兜底。
         """
         # 先找到收到 message_end 的那条 run（可能不存在）
-        end = (WorkflowRunData.objects
-               .filter(workflow_run__robot_task_id=task_id, event="message_end")
-               .first())
+        end = (WorkflowRunData.objects.filter(
+            workflow_run__robot_task_id=task_id,
+            event="message_end").first())
         if end:
             # 同一次 run 里最新一条 message
             msg = (WorkflowRunData.objects
