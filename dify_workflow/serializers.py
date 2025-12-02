@@ -2,6 +2,7 @@ from rest_framework import serializers
 from dify_workflow.models import *
 from common.loger import logger
 from uuid import UUID
+from django.db import IntegrityError, OperationalError, DatabaseError
 
 
 class AgentLogSerializer(serializers.ModelSerializer):
@@ -36,14 +37,23 @@ class WorkflowTaskSerializer(serializers.ModelSerializer):
         logger.info(f"开始处理机器人任务 data={validated_data}")
         lookup_fields, defaults = self._split_fields(validated_data)
         self._coerce_types(lookup_fields)  # 仅对查询键做类型转换
-        task, created = WorkflowTask.objects.update_or_create(
-            defaults=defaults,
-            **lookup_fields
-        )
-        logger.info(f"WorkflowTask {'新建' if created else '更新'}完成, id={task.id}")
+        try:
+            task, created = WorkflowTask.objects.update_or_create(
+                defaults=defaults,
+                **lookup_fields
+            )
+            self._create_run_data(task, validated_data)
+            return task
+        except IntegrityError as e:
+            # 唯一冲突、外键不存在等
+            if 'unique' in str(e).lower():
+                task = WorkflowTask.objects.filter(robot_task=validated_data['robot_task']).first()
+                logger.error(
+                    f"处理机器人任务失败：新增数据为：\n{validated_data},原来已存在数据为：\n"
+                    f"workflow_run_id: {task.workflow_run_id} task_id: {task.task_id} conversation_id: {task.conversation_id}")
+            else:
+                logger.error("更新任务失败: %s", e)
 
-        self._create_run_data(task, validated_data)
-        return task
 
     # ---------- 辅助方法 ----------
     @staticmethod
