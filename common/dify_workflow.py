@@ -82,11 +82,6 @@ class DifyChatClient:
     # ---------------- 单条任务状态机 ----------------
     def modify_worker_status(self, stream_id: str) -> bool:
         # SQLite 下不再 select_for_update
-        WechatRobotQuestion.objects.filter(stream=stream_id, status="failed").update(
-            finish=True,
-            status="failed",
-            content="机器人处理失败，请稍后再试……"
-        )
 
         try:
             task = WechatRobotQuestion.objects.get(stream=stream_id)
@@ -94,8 +89,17 @@ class DifyChatClient:
             logger.error("任务不存在 stream=%s", stream_id)
             return False
 
-        if task.status in ("failed", "succeeded"):
+        # # 当前任务状态,即标记结束状态并返回提示
+        if task.status in ("succeeded",):
+            content = self._get_latest_content(task.id)
+            WechatRobotQuestion.objects.filter(pk=task.id).update(content=content)
             return True
+        elif task.status == "failed":
+            WechatRobotQuestion.objects.filter(stream=stream_id, status="failed").update(
+                finish=True,
+                status="failed",
+                content="机器人处理失败，请稍后再试……"
+            )
 
         # 1. 超时失败
         timeout = int(getattr(settings, "ANSWER_TIMEOUT", 120))
@@ -170,6 +174,9 @@ class DifyChatClient:
                    .first())
             if msg and msg.workflow_run.answer:
                 return msg.workflow_run.answer
+            else:
+                logger.warning("stream=%s 找不到 message_end 同一次 run，已标为失败", task_id)
+                return "大模型调用异常，请排查....."
 
         # 没取到就退而求其次：最新任意一条 message
         latest_msg = (WorkflowRunData.objects
@@ -179,6 +186,7 @@ class DifyChatClient:
                       .first())
         if latest_msg and latest_msg.workflow_run.answer:
             return latest_msg.workflow_run.answer
+
         # 兜底
         return "大模型正在处理中……"
 
