@@ -227,11 +227,20 @@ class DifyChatClient:
                 instance.save()
             finally:
                 print()
+
+    def check_workflow_run(self, instance: WechatRobotQuestion):
+        if not instance.workflow_runs:
+            instance.status = 'failed'
+            instance.stream = '大模型调用异常，请稍后再试……'
+            instance.finish = True
+            instance.save()
+            return
         if not instance.workflow_runs.data.all():
             instance.status = 'failed'
             instance.stream = '大模型调用异常，请稍后再试……'
             instance.finish = True
             instance.save()
+            return
 
     def chat(self, query, instance: WechatRobotQuestion, user_id="user_id", inputs=None, **kwargs):
         """
