@@ -14,7 +14,7 @@ services:
       - /data/dify-data:/data
     environment:
       - DIFY_API_URL=https://dify.kyoffice.cn/v1
-      - DIFY_API_KEY=app-o7WVQztApWppQIqR7exy6OBH11
+      - DIFY_API_KEY=app-
       - WECHAT_ENCODING_AES_KEY=
       - WECHAT_TOKEN=
       - LOGLEVEL=INFO
